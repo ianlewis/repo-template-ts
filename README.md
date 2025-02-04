@@ -39,8 +39,8 @@ maintained and updated via `dependabot`-like tooling.
 
 Required runtimes:
 
-- [`node`]: Node.js is required to run some linters and formatters.
-- [`python`]: Node.js is required to run some linters and formatters.
+- [`Node.js`]: Node.js is required to run some linters and formatters.
+- [`Python`]: Python is required to run some linters and formatters.
 
 The following tools need to be installed:
 
@@ -49,8 +49,7 @@ The following tools need to be installed:
 
 The following tools are installed locally:
 
-- [`yamllint`]: For YAML (e.g. GitHub Actions workflows). (installed in Python
-  virtualenv `.venv`).
+- [`yamllint`]: For YAML (e.g. GitHub Actions workflows; installed in Python virtualenv `.venv`).
 - [`prettier`]: For formatting markdown and yaml (installed in local
   `node_modules`).
 - [`markdownlint`]: For linting markdown (installed in local `node_modules`).
@@ -89,14 +88,20 @@ overall project supply-chain security.
 External dependencies on GitHub actions are limited to official GitHub-owned
 actions to minimize exposure to compromise of external repositories.
 
+## Language-specific templates
+
+A number of language specific templates based on this template are also available:
+
+- Go: [ianlewis/repo-template-go](https://github.com/ianlewis/repo-template-go)
+
 ## Contributing
 
 See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for contributor documentation.
 
+[`Node.js`]: https://nodejs.org/
+[`Python`]: https://www.python.org/
 [`actionlint`]: https://github.com/rhysd/actionlint
 [`markdownlint`]: https://github.com/DavidAnson/markdownlint
-[`yamllint`]: https://www.yamllint.com/
 [`prettier`]: https://prettier.io/
 [`shellcheck`]: https://www.shellcheck.net/
-[`node`]: https://nodejs.org/
-[`python`]: https://www.python.org/
+[`yamllint`]: https://www.yamllint.com/
