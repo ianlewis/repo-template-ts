@@ -168,3 +168,12 @@ yamllint: .venv/.installed ## Runs the yamllint linter.
 			extraargs="-f github"; \
 		fi; \
 		.venv/bin/yamllint --strict -c .yamllint.yaml $${extraargs} $${files}
+
+## Maintenance
+#####################################################################
+
+.PHONY: clean
+clean: ## Delete temporary files.
+	@rm -rf \
+		.venv \
+		node_modules
