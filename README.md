@@ -110,7 +110,10 @@ git merge --no-edit --signoff --squash --allow-unrelated-histories repo-template
 
 A number of language specific templates based on this template are also available:
 
-- Go: [ianlewis/repo-template-go](https://github.com/ianlewis/repo-template-go)
+| Language              | Repository                                                                |
+| --------------------- | ------------------------------------------------------------------------- |
+| Go                    | [ianlewis/repo-template-go](https://github.com/ianlewis/repo-template-go) |
+| TypeScript/JavaScript | [ianlewis/repo-template-ts](https://github.com/ianlewis/repo-template-ts) |
 
 ## Contributing
 
