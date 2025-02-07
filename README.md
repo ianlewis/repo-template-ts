@@ -15,21 +15,28 @@ includes a default `help` target that prints all make targets and their
 descriptions grouped by function.
 
 ```shell
-repo-template$ make
-repo-template Makefile
+repo-template-ts$ make
+repo-template-ts Makefile
 Usage: make [COMMAND]
 
   help                 Shows all targets and help from the Makefile (this message).
+Build
+  compile              Compile TypeScript.
 Tools
   license-headers      Update license headers.
   format               Format all files
   md-format            Format Markdown files.
   yaml-format          Format YAML files.
+  js-format            Format YAML files.
+  ts-format            Format YAML files.
 Linters
   lint                 Run all linters.
   actionlint           Runs the actionlint linter.
   markdownlint         Runs the markdownlint linter.
   yamllint             Runs the yamllint linter.
+  eslint               Runs eslint.
+Maintenance
+  clean                Delete temporary files.
 ```
 
 ## Formating and linting
