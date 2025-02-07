@@ -1,4 +1,8 @@
 {
+  "name": "repo-template-ts",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "lib/main.js",
   "engines": {
     "node": ">=22.0.0 <23"
   },
@@ -6,7 +10,7 @@
     "@stylistic/eslint-plugin-ts": "^3.0.1",
     "@typescript-eslint/eslint-plugin": "^8.23.0",
     "@typescript-eslint/parser": "^8.23.0",
-    "eslint": "^8.57.0",
+    "eslint": "^9.19.0",
     "eslint-plugin-github": "^5.1.8",
     "eslint-plugin-prettier": "^5.2.3",
     "markdownlint-cli": "^0.44.0",
