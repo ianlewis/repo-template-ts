@@ -103,7 +103,7 @@ git remote add repo-template git@github.com:ianlewis/repo-template.git
 git fetch repo-template main
 
 # Create a new squash merge commit.
-git merge --no-edit --signoff --squash --allow-unrelated-histories --log repo-template/main
+git merge --no-edit --signoff --squash --allow-unrelated-histories repo-template/main
 ```
 
 ## Language-specific templates
