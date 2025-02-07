@@ -72,6 +72,7 @@ license-headers: ## Update license headers.
 				'*.py' '**/*.py' \
 				'*.yaml' '**/*.yaml' \
 				'*.yml' '**/*.yml' \
+				'Makefile' \
 		); \
 		name=$$(git config user.name); \
 		if [ "$${name}" == "" ]; then \
