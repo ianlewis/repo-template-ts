@@ -1,10 +1,12 @@
-# repo-template
+# repo-template-ts
 
-[![tests](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml/badge.svg)](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml)
+[![tests](https://github.com/ianlewis/repo-template-ts/actions/workflows/pre-submit.units.yml/badge.svg)](https://github.com/ianlewis/repo-template-ts/actions/workflows/pre-submit.units.yml)
+
+Repository template for TypeScript repos under github.com/ianlewis
 
 This repository template is maintained for use in repos under
-`github.com/ianlewis`. However, it can be used as a general purpose repository
-starter template.
+`github.com/ianlewis`. However, it can be used as a general purpose TypeScript
+repository starter template.
 
 ## Makefile
 
@@ -13,21 +15,28 @@ includes a default `help` target that prints all make targets and their
 descriptions grouped by function.
 
 ```shell
-repo-template$ make
-repo-template Makefile
+repo-template-ts$ make
+repo-template-ts Makefile
 Usage: make [COMMAND]
 
   help                 Shows all targets and help from the Makefile (this message).
+Build
+  compile              Compile TypeScript.
 Tools
   license-headers      Update license headers.
   format               Format all files
   md-format            Format Markdown files.
   yaml-format          Format YAML files.
+  js-format            Format YAML files.
+  ts-format            Format YAML files.
 Linters
   lint                 Run all linters.
   actionlint           Runs the actionlint linter.
   markdownlint         Runs the markdownlint linter.
   yamllint             Runs the yamllint linter.
+  eslint               Runs eslint.
+Maintenance
+  clean                Delete temporary files.
 ```
 
 ## Formating and linting
@@ -97,23 +106,14 @@ commit on your commit history.
 
 ```shell
 # One time step: Add the repository template as a remote.
-git remote add repo-template git@github.com:ianlewis/repo-template.git
+git remote add repo-template-ts git@github.com:ianlewis/repo-template-ts.git
 
-# Fetch the latest version of the repo-template.
-git fetch repo-template main
+# Fetch the latest version of the repo-template-ts.
+git fetch repo-template-ts main
 
 # Create a new squash merge commit.
-git merge --no-edit --signoff --squash --allow-unrelated-histories repo-template/main
+git merge --no-edit --signoff --squash --allow-unrelated-histories --log repo-template-ts/main
 ```
-
-## Language-specific templates
-
-A number of language specific templates based on this template are also available:
-
-| Language              | Repository                                                                |
-| --------------------- | ------------------------------------------------------------------------- |
-| Go                    | [ianlewis/repo-template-go](https://github.com/ianlewis/repo-template-go) |
-| TypeScript/JavaScript | [ianlewis/repo-template-ts](https://github.com/ianlewis/repo-template-ts) |
 
 ## Contributing
 
