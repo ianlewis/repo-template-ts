@@ -45,18 +45,18 @@ help: ## Shows all targets and help from the Makefile (this message).
 		}'
 
 package-lock.json:
-	npm install
+	@npm install
 
 node_modules/.installed: package.json package-lock.json
-	npm ci
-	touch node_modules/.installed
+	@npm ci
+	@touch node_modules/.installed
 
 .venv/bin/activate:
-	python -m venv .venv
+	@python -m venv .venv
 
 .venv/.installed: .venv/bin/activate requirements.txt
-	./.venv/bin/pip install -r requirements.txt --require-hashes
-	touch .venv/.installed
+	@./.venv/bin/pip install -r requirements.txt --require-hashes
+	@touch .venv/.installed
 
 ## Tools
 #####################################################################
@@ -89,6 +89,9 @@ license-headers: ## Update license headers.
 			autogen -i --no-code --no-tlc -c "$${name}" -l apache Makefile; \
 		fi;
 
+## Formatting
+#####################################################################
+
 .PHONY: format
 format: md-format yaml-format ## Format all files
 
@@ -112,7 +115,7 @@ yaml-format: node_modules/.installed ## Format YAML files.
 		); \
 		npx prettier --write --no-error-on-unmatched-pattern $${files}
 
-## Linters
+## Linting
 #####################################################################
 
 .PHONY: lint
