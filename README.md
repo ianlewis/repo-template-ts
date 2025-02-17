@@ -13,21 +13,24 @@ includes a default `help` target that prints all make targets and their
 descriptions grouped by function.
 
 ```shell
-repo-template$ make
+$ make
 repo-template Makefile
 Usage: make [COMMAND]
 
   help                 Shows all targets and help from the Makefile (this message).
 Tools
   license-headers      Update license headers.
+Formatting
   format               Format all files
   md-format            Format Markdown files.
   yaml-format          Format YAML files.
-Linters
+Linting
   lint                 Run all linters.
   actionlint           Runs the actionlint linter.
   markdownlint         Runs the markdownlint linter.
   yamllint             Runs the yamllint linter.
+Maintenance
+  clean                Delete temporary files.
 ```
 
 ## Formating and linting
