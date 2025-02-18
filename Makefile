@@ -118,7 +118,7 @@ yaml-format: node_modules/.installed ## Format YAML files.
 #####################################################################
 
 .PHONY: lint
-lint: yamlint markdownlint actionlint zizmor ## Run all linters.
+lint: yamllint markdownlint actionlint zizmor ## Run all linters.
 
 .PHONY: actionlint
 actionlint: ## Runs the actionlint linter.
