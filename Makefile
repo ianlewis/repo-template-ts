@@ -118,7 +118,7 @@ yaml-format: node_modules/.installed ## Format YAML files.
 #####################################################################
 
 .PHONY: lint
-lint: yamllint actionlint markdownlint ## Run all linters.
+lint: yamlint markdownlint actionlint zizmor ## Run all linters.
 
 .PHONY: actionlint
 actionlint: ## Runs the actionlint linter.
@@ -133,6 +133,25 @@ actionlint: ## Runs the actionlint linter.
 			actionlint -format '{{range $$err := .}}::error file={{$$err.Filepath}},line={{$$err.Line}},col={{$$err.Column}}::{{$$err.Message}}%0A```%0A{{replace $$err.Snippet "\\n" "%0A"}}%0A```\n{{end}}' -ignore 'SC2016:' $${files}; \
 		else \
 			actionlint $${files}; \
+		fi
+
+.PHONY: zizmor
+zizmor: .venv/.installed ## Runs the zizmor linter.
+	@# NOTE: On GitHub actions this outputs SARIF format to zizmor.sarif.json
+	@#       rather than outputting errors to the terminal. This is so that
+	@#       security issues can be uploaded privately rather than being made
+	@#       public.
+	@set -euo pipefail;\
+		extraargs=""; \
+		files=$$( \
+			git ls-files --deduplicate \
+				'.github/workflows/*.yml' \
+				'.github/workflows/*.yaml' \
+		); \
+		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
+			.venv/bin/zizmor --pedantic --format sarif $${files} > zizmor.sarif.json; \
+		else \
+			.venv/bin/zizmor --pedantic --format plain $${files}; \
 		fi
 
 .PHONY: markdownlint
@@ -206,4 +225,5 @@ yamllint: .venv/.installed ## Runs the yamllint linter.
 clean: ## Delete temporary files.
 	@rm -rf \
 		.venv \
-		node_modules
+		node_modules \
+		*.sarif.json
