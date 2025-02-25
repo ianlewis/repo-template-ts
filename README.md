@@ -15,7 +15,6 @@ includes a default `help` target that prints all make targets and their
 descriptions grouped by function.
 
 ```shell
-repo-template-ts$ make
 repo-template-ts Makefile
 Usage: make [COMMAND]
 
@@ -24,6 +23,7 @@ Build
   compile              Compile TypeScript.
 Tools
   license-headers      Update license headers.
+Formatting
   format               Format all files
   md-format            Format Markdown files.
   yaml-format          Format YAML files.
@@ -32,6 +32,7 @@ Tools
 Linters
   lint                 Run all linters.
   actionlint           Runs the actionlint linter.
+  zizmor               Runs the zizmor linter.
   markdownlint         Runs the markdownlint linter.
   yamllint             Runs the yamllint linter.
   eslint               Runs eslint.
@@ -62,6 +63,7 @@ The following tools are installed locally:
 - [`prettier`]: For formatting markdown and yaml (installed in local
   `node_modules`).
 - [`markdownlint`]: For linting markdown (installed in local `node_modules`).
+- [`eslint`]: For linting JavaScript and TypeScript (installed in local `node_modules`).
 
 `Makefile` targets and linter/formatter config are designed to respect
 `.gitignore` and not cross `git` submodules boundaries. However, you will need
@@ -101,7 +103,7 @@ actions to minimize exposure to compromise of external repositories.
 
 You can optionally keep repositories created with the template in sync with
 changes to the template. Because repositories created from GitHub templates are
-not forks, it is recommended to to a squash merge to squash the merge as a
+not forks, it is recommended to perform a squash merge to squash the merge as a
 commit on your commit history.
 
 ```shell
