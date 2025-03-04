@@ -128,3 +128,4 @@ See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for contributor documentation.
 [`prettier`]: https://prettier.io/
 [`shellcheck`]: https://www.shellcheck.net/
 [`yamllint`]: https://www.yamllint.com/
+[`eslint`]: https://eslint.org/
