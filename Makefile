@@ -109,7 +109,9 @@ md-format: node_modules/.installed ## Format Markdown files.
 			git ls-files --deduplicate \
 				'*.md' '**/*.md' \
 		); \
-		npx prettier --write --no-error-on-unmatched-pattern $${files}
+		if [ "$${files}" != "" ]; then \
+			npx prettier --write --no-error-on-unmatched-pattern $${files}; \
+		fi
 
 .PHONY: yaml-format
 yaml-format: node_modules/.installed ## Format YAML files.
@@ -119,7 +121,9 @@ yaml-format: node_modules/.installed ## Format YAML files.
 				'*.yml' '**/*.yml' \
 				'*.yaml' '**/*.yaml' \
 		); \
-		npx prettier --write --no-error-on-unmatched-pattern $${files}
+		if [ "$${files}" != "" ]; then \
+			npx prettier --write --no-error-on-unmatched-pattern $${files}; \
+		fi
 
 .PHONY: js-format
 js-format: node_modules/.installed ## Format YAML files.
@@ -129,7 +133,9 @@ js-format: node_modules/.installed ## Format YAML files.
 				'*.js' '**/*.js' \
 				'*.javascript' '**/*.javascript' \
 		); \
-		npx prettier --write --no-error-on-unmatched-pattern $${files}
+		if [ "$${files}" != "" ]; then \
+			npx prettier --write --no-error-on-unmatched-pattern $${files}; \
+		fi
 
 .PHONY: ts-format
 ts-format: node_modules/.installed ## Format YAML files.
@@ -139,7 +145,9 @@ ts-format: node_modules/.installed ## Format YAML files.
 				'*.ts' '**/*.ts' \
 				'*.typescript' '**/*.typescript' \
 		); \
-		npx prettier --write --no-error-on-unmatched-pattern $${files}
+		if [ "$${files}" != "" ]; then \
+			npx prettier --write --no-error-on-unmatched-pattern $${files}; \
+		fi
 
 ## Linters
 #####################################################################
