@@ -50,7 +50,9 @@ jobs:
           set -euo pipefail
           if [ "$(GIT_PAGER="cat" git diff --ignore-space-at-eol | wc -l)" -gt "0" ]; then
               echo "Detected license header changes.  See status below:"
+              echo "::group::git diff"
               GIT_PAGER="cat" git diff
+              echo "::endgroup::"
               exit 1
           fi
 
@@ -73,7 +75,9 @@ jobs:
           set -euo pipefail
           if [ "$(GIT_PAGER="cat" git diff --ignore-space-at-eol | wc -l)" -gt "0" ]; then
               echo "Detected formatting changes.  See status below:"
+              echo "::group::git diff"
               GIT_PAGER="cat" git diff
+              echo "::endgroup::"
               exit 1
           fi
 
