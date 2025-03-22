@@ -66,12 +66,12 @@ license-headers: ## Update license headers.
 	@set -euo pipefail; \
 		files=$$( \
 			git ls-files --deduplicate \
-				'*.go' '**/*.go' \
-				'*.ts' '**/*.ts' \
-				'*.js' '**/*.js' \
-				'*.py' '**/*.py' \
-				'*.yaml' '**/*.yaml' \
-				'*.yml' '**/*.yml' \
+				'*.go' \
+				'*.ts' \
+				'*.js' \
+				'*.py' \
+				'*.yaml' \
+				'*.yml' \
 				'Makefile' \
 		); \
 		name=$$(git config user.name); \
@@ -100,7 +100,7 @@ md-format: node_modules/.installed ## Format Markdown files.
 	@set -euo pipefail; \
 		files=$$( \
 			git ls-files --deduplicate \
-				'*.md' '**/*.md' \
+				'*.md' \
 		); \
 		npx prettier --write --no-error-on-unmatched-pattern $${files}
 
@@ -109,8 +109,8 @@ yaml-format: node_modules/.installed ## Format YAML files.
 	@set -euo pipefail; \
 		files=$$( \
 			git ls-files --deduplicate \
-				'*.yml' '**/*.yml' \
-				'*.yaml' '**/*.yaml' \
+				'*.yml' \
+				'*.yaml' \
 		); \
 		npx prettier --write --no-error-on-unmatched-pattern $${files}
 
@@ -159,7 +159,7 @@ markdownlint: node_modules/.installed ## Runs the markdownlint linter.
 	@set -euo pipefail;\
 		files=$$( \
 			git ls-files --deduplicate \
-				'*.md' '**/*.md' \
+				'*.md' \
 				':!:.github/pull_request_template.md' \
 				':!:.github/ISSUE_TEMPLATE/*.md' \
 		); \
@@ -207,8 +207,8 @@ yamllint: .venv/.installed ## Runs the yamllint linter.
 		extraargs=""; \
 		files=$$( \
 			git ls-files --deduplicate \
-				'*.yml' '**/*.yml' \
-				'*.yaml' '**/*.yaml' \
+				'*.yml' \
+				'*.yaml' \
 		); \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			extraargs="-f github"; \
