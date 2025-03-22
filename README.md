@@ -1,6 +1,8 @@
 # repo-template
 
-[![tests](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml/badge.svg)](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml)
+<!-- TODO: update badge urls -->
+
+[![tests](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml/badge.svg)](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml) [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template/badge)](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template)
 
 This repository template is maintained for use in repos under
 `github.com/ianlewis`. However, it can be used as a general purpose repository
