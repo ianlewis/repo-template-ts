@@ -118,7 +118,7 @@ yaml-format: node_modules/.installed ## Format YAML files.
 #####################################################################
 
 .PHONY: lint
-lint: yamllint markdownlint actionlint zizmor ## Run all linters.
+lint: actionlint markdownlint textlint yamllint zizmor ## Run all linters.
 
 .PHONY: actionlint
 actionlint: ## Runs the actionlint linter.
@@ -199,6 +199,31 @@ markdownlint: node_modules/.installed ## Runs the markdownlint linter.
 			fi; \
 		else \
 			npx markdownlint  --config .github/template.markdownlint.yaml --dot $${files}; \
+		fi
+
+.PHONY: textlint
+textlint: node_modules/.installed ## Runs the textlint linter.
+	@set -e;\
+		files=$$( \
+			git ls-files --deduplicate \
+				'*.md' \
+				'*.txt' \
+		); \
+		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
+			exit_code=0; \
+			while IFS="" read -r p && [ -n "$$p" ]; do \
+				filePath=$$(echo "$$p" | jq -c -r '.filePath // empty'); \
+				file=$$(realpath --relative-to="." "$${filePath}"); \
+				while IFS="" read -r m && [ -n "$$m" ]; do \
+					line=$$(echo "$$m" | jq -c -r '.loc.start.line'); \
+					endline=$$(echo "$$m" | jq -c -r '.loc.end.line'); \
+					message=$$(echo "$$m" | jq -c -r '.message'); \
+					echo "::error file=$${file},line=$${line},endLine=$${endline}::$${message}"; \
+				done <<<"$$(echo "$$p" | jq -c -r '.messages[] // empty')"; \
+			done <<< "$$(./node_modules/.bin/textlint -c .textlintrc.json --format json $${files} 2>&1 | jq -c '.[]')"; \
+			exit "$${exit_code}"; \
+		else \
+			./node_modules/.bin/textlint -c .textlintrc.json $${files}; \
 		fi
 
 .PHONY: yamllint

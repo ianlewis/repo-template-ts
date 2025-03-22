@@ -52,6 +52,7 @@ don't need to be pre-installed:
 - [`yamllint`]: For linting YAML files (installed in local Python virtualenv `.venv`).
 - [`prettier`]: For formatting markdown and yaml (installed in local `node_modules`).
 - [`markdownlint`]: For linting markdown (installed in local `node_modules`).
+- [`textlint`]: For spelling checks (installed in local `node_modules`).
 - [`zizmor`]: For linting GitHub Actions workflows (installed in local Python virtualenv `.venv`).
 
 ## Makefile
@@ -77,6 +78,7 @@ Linting
   actionlint           Runs the actionlint linter.
   zizmor               Runs the zizmor linter.
   markdownlint         Runs the markdownlint linter.
+  textlint             Runs the textlint linter.
   yamllint             Runs the yamllint linter.
 Maintenance
   clean                Delete temporary files.
@@ -139,6 +141,7 @@ The following checks should be marked as required:
 - [ ] `formatting`
 - [ ] `licence-headers`
 - [ ] `markdownlint`
+- [ ] `textlint`
 - [ ] `todos`
 - [ ] `yamllint`
 
@@ -216,5 +219,6 @@ documentation.
 [`markdownlint`]: https://github.com/DavidAnson/markdownlint
 [`prettier`]: https://prettier.io/
 [`shellcheck`]: https://www.shellcheck.net/
+[`textlint`]: https://textlint.github.io/
 [`yamllint`]: https://www.yamllint.com/
 [`zizmor`]: https://woodruffw.github.io/zizmor/
