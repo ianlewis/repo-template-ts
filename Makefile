@@ -140,7 +140,6 @@ zizmor: .venv/.installed ## Runs the zizmor linter.
 	@# NOTE: On GitHub actions this outputs SARIF format to zizmor.sarif.json
 	@#       in addition to outputting errors to the terminal.
 	@set -euo pipefail;\
-		extraargs=""; \
 		files=$$( \
 			git ls-files --deduplicate \
 				'.github/workflows/*.yml' \
