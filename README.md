@@ -1,12 +1,10 @@
-# repo-template
+# repo-template-ts
 
-<!-- TODO: update badge urls -->
-
-[![tests](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml/badge.svg)](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml) [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template/badge)](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template)
+[![tests](https://github.com/ianlewis/repo-template-ts/actions/workflows/pre-submit.units.yml/badge.svg)](https://github.com/ianlewis/repo-template-ts/actions/workflows/pre-submit.units.yml) [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template-ts/badge)](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template-ts)
 
 This repository template is maintained for use in repos under
-`github.com/ianlewis`. However, it can be used as a general purpose repository
-starter template.
+`github.com/ianlewis`. However, it can be used as a general purpose TypeScript
+repository starter template.
 
 ## Goals
 
@@ -56,6 +54,7 @@ don't need to be pre-installed:
 - [`markdownlint`]: For linting markdown (installed in local `node_modules`).
 - [`textlint`]: For spelling checks (installed in local `node_modules`).
 - [`zizmor`]: For linting GitHub Actions workflows (installed in local Python virtualenv `.venv`).
+- [`eslint`]: For linting JavaScript and TypeScript (installed in local `node_modules`).
 
 ## Makefile
 
@@ -65,16 +64,20 @@ descriptions grouped by function.
 
 ```shell
 $ make
-repo-template Makefile
+repo-template-ts Makefile
 Usage: make [COMMAND]
 
   help                 Shows all targets and help from the Makefile (this message).
+Build
+  compile              Compile TypeScript.
 Tools
   license-headers      Update license headers.
 Formatting
   format               Format all files
   md-format            Format Markdown files.
   yaml-format          Format YAML files.
+  js-format            Format YAML files.
+  ts-format            Format YAML files.
 Linting
   lint                 Run all linters.
   actionlint           Runs the actionlint linter.
@@ -82,6 +85,7 @@ Linting
   markdownlint         Runs the markdownlint linter.
   textlint             Runs the textlint linter.
   yamllint             Runs the yamllint linter.
+  eslint               Runs eslint.
 Maintenance
   clean                Delete temporary files.
 ```
@@ -140,6 +144,7 @@ as closely as possible.
 The following checks should be marked as required:
 
 - [ ] `actionlint`
+- [ ] `eslint`
 - [ ] `formatting`
 - [ ] `licence-headers`
 - [ ] `markdownlint`
@@ -187,23 +192,14 @@ commit on your commit history.
 
 ```shell
 # One time step: Add the repository template as a remote.
-git remote add repo-template git@github.com:ianlewis/repo-template.git
+git remote add repo-template-ts git@github.com:ianlewis/repo-template-ts.git
 
-# Fetch the latest version of the repo-template.
-git fetch repo-template main
+# Fetch the latest version of the repo-template-ts.
+git fetch repo-template-ts main
 
 # Create a new squash merge commit.
-git merge --no-edit --signoff --squash --allow-unrelated-histories repo-template/main
+git merge --no-edit --signoff --squash --allow-unrelated-histories --log repo-template-ts/main
 ```
-
-## Language-specific templates
-
-A number of language specific templates based on this template are also available:
-
-| Language              | Repository                                                                |
-| --------------------- | ------------------------------------------------------------------------- |
-| Go                    | [ianlewis/repo-template-go](https://github.com/ianlewis/repo-template-go) |
-| TypeScript/JavaScript | [ianlewis/repo-template-ts](https://github.com/ianlewis/repo-template-ts) |
 
 ## Contributing
 
@@ -215,6 +211,7 @@ documentation.
 [`Node.js`]: https://nodejs.org/
 [`Python`]: https://www.python.org/
 [`actionlint`]: https://github.com/rhysd/actionlint
+[`eslint`]: https://eslint.org/
 [`mbrukman/autogen`]: https://github.com/mbrukman/autogen
 [`git`]: https://git-scm.com/
 [`jq`]: https://jqlang.org/

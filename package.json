@@ -1,4 +1,8 @@
 {
+  "name": "repo-template-ts",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "lib/main.js",
   "engines": {
     "node": ">=22.0.0 <23"
   },
@@ -8,6 +12,13 @@
     "prettier": "3.5.3",
     "textlint": "^14.5.0",
     "textlint-filter-rule-comments": "^1.2.2",
-    "textlint-rule-spelling": "^0.3.0"
+    "textlint-rule-spelling": "^0.3.0",
+    "@stylistic/eslint-plugin-ts": "^4.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.26.1",
+    "@typescript-eslint/parser": "^8.26.1",
+    "eslint": "^9.22.0",
+    "eslint-plugin-github": "^5.1.8",
+    "eslint-plugin-prettier": "^5.2.3",
+    "typescript": "^5.8.2"
   }
 }

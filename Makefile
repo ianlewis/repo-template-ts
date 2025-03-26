@@ -58,6 +58,13 @@ node_modules/.installed: package.json package-lock.json
 	@./.venv/bin/pip install -r requirements.txt --require-hashes
 	@touch .venv/.installed
 
+## Build
+#####################################################################
+
+.PHONY: compile
+compile: ## Compile TypeScript.
+	@npx tsc
+
 ## Tools
 #####################################################################
 
@@ -93,7 +100,7 @@ license-headers: ## Update license headers.
 #####################################################################
 
 .PHONY: format
-format: md-format yaml-format ## Format all files
+format: md-format yaml-format js-format ts-format ## Format all files
 
 .PHONY: md-format
 md-format: node_modules/.installed ## Format Markdown files.
@@ -102,7 +109,9 @@ md-format: node_modules/.installed ## Format Markdown files.
 			git ls-files --deduplicate \
 				'*.md' \
 		); \
-		npx prettier --write --no-error-on-unmatched-pattern $${files}
+		if [ "$${files}" != "" ]; then \
+			npx prettier --write --no-error-on-unmatched-pattern $${files}; \
+		fi
 
 .PHONY: yaml-format
 yaml-format: node_modules/.installed ## Format YAML files.
@@ -112,13 +121,39 @@ yaml-format: node_modules/.installed ## Format YAML files.
 				'*.yml' \
 				'*.yaml' \
 		); \
-		npx prettier --write --no-error-on-unmatched-pattern $${files}
+		if [ "$${files}" != "" ]; then \
+			npx prettier --write --no-error-on-unmatched-pattern $${files}; \
+		fi
+
+.PHONY: js-format
+js-format: node_modules/.installed ## Format YAML files.
+	@set -euo pipefail; \
+		files=$$( \
+			git ls-files \
+				'*.js' '**/*.js' \
+				'*.javascript' '**/*.javascript' \
+		); \
+		if [ "$${files}" != "" ]; then \
+			npx prettier --write --no-error-on-unmatched-pattern $${files}; \
+		fi
+
+.PHONY: ts-format
+ts-format: node_modules/.installed ## Format YAML files.
+	@set -euo pipefail; \
+		files=$$( \
+			git ls-files \
+				'*.ts' '**/*.ts' \
+				'*.typescript' '**/*.typescript' \
+		); \
+		if [ "$${files}" != "" ]; then \
+			npx prettier --write --no-error-on-unmatched-pattern $${files}; \
+		fi
 
 ## Linting
 #####################################################################
 
 .PHONY: lint
-lint: actionlint markdownlint textlint yamllint zizmor ## Run all linters.
+lint: actionlint markdownlint textlint yamllint zizmor eslint ## Run all linters.
 
 .PHONY: actionlint
 actionlint: ## Runs the actionlint linter.
@@ -238,6 +273,42 @@ yamllint: .venv/.installed ## Runs the yamllint linter.
 			extraargs="-f github"; \
 		fi; \
 		.venv/bin/yamllint --strict -c .yamllint.yaml $${extraargs} $${files}
+
+.PHONY: eslint
+eslint: node_modules/.installed ## Runs eslint.
+	@set -euo pipefail; \
+		files=$$( \
+			git ls-files \
+				'*.ts' \
+				'*.js' \
+		); \
+		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
+			set -euo pipefail; \
+			exit_code=0; \
+			while IFS="" read -r p && [ -n "$${p}" ]; do \
+				file=$$(echo "$${p}" | jq -c '.filePath // empty' | tr -d '"'); \
+				while IFS="" read -r m && [ -n "$${m}" ]; do \
+					severity=$$(echo "$${m}" | jq -c '.severity // empty' | tr -d '"'); \
+					line=$$(echo "$${m}" | jq -c '.line // empty' | tr -d '"'); \
+					endline=$$(echo "$${m}" | jq -c '.endLine // empty' | tr -d '"'); \
+					col=$$(echo "$${m}" | jq -c '.column // empty' | tr -d '"'); \
+					endcol=$$(echo "$${m}" | jq -c '.endColumn // empty' | tr -d '"'); \
+					message=$$(echo "$${m}" | jq -c '.message // empty' | tr -d '"'); \
+					exit_code=1; \
+					case $${severity} in \
+					"1") \
+						echo "::warning file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
+						;; \
+					"2") \
+						echo "::error file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
+						;; \
+					esac; \
+				done <<<$$(echo "$${p}" | jq -c '.messages[]'); \
+			done <<<$$(npx eslint --max-warnings 0 -f json $${files} | jq -c '.[]'); \
+			exit "$${exit_code}"; \
+		else \
+			npx eslint --max-warnings 0 $${files}; \
+		fi
 
 ## Maintenance
 #####################################################################
