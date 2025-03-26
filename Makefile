@@ -73,12 +73,12 @@ license-headers: ## Update license headers.
 	@set -euo pipefail; \
 		files=$$( \
 			git ls-files --deduplicate \
-				'*.go' '**/*.go' \
-				'*.ts' '**/*.ts' \
-				'*.js' '**/*.js' \
-				'*.py' '**/*.py' \
-				'*.yaml' '**/*.yaml' \
-				'*.yml' '**/*.yml' \
+				'*.go' \
+				'*.ts' \
+				'*.js' \
+				'*.py' \
+				'*.yaml' \
+				'*.yml' \
 				'Makefile' \
 		); \
 		name=$$(git config user.name); \
@@ -107,7 +107,7 @@ md-format: node_modules/.installed ## Format Markdown files.
 	@set -euo pipefail; \
 		files=$$( \
 			git ls-files --deduplicate \
-				'*.md' '**/*.md' \
+				'*.md' \
 		); \
 		if [ "$${files}" != "" ]; then \
 			npx prettier --write --no-error-on-unmatched-pattern $${files}; \
@@ -118,8 +118,8 @@ yaml-format: node_modules/.installed ## Format YAML files.
 	@set -euo pipefail; \
 		files=$$( \
 			git ls-files --deduplicate \
-				'*.yml' '**/*.yml' \
-				'*.yaml' '**/*.yaml' \
+				'*.yml' \
+				'*.yaml' \
 		); \
 		if [ "$${files}" != "" ]; then \
 			npx prettier --write --no-error-on-unmatched-pattern $${files}; \
@@ -149,11 +149,11 @@ ts-format: node_modules/.installed ## Format YAML files.
 			npx prettier --write --no-error-on-unmatched-pattern $${files}; \
 		fi
 
-## Linters
+## Linting
 #####################################################################
 
 .PHONY: lint
-lint: yamllint markdownlint actionlint zizmor eslint ## Run all linters.
+lint: actionlint markdownlint textlint yamllint zizmor eslint ## Run all linters.
 
 .PHONY: actionlint
 actionlint: ## Runs the actionlint linter.
@@ -173,21 +173,17 @@ actionlint: ## Runs the actionlint linter.
 .PHONY: zizmor
 zizmor: .venv/.installed ## Runs the zizmor linter.
 	@# NOTE: On GitHub actions this outputs SARIF format to zizmor.sarif.json
-	@#       rather than outputting errors to the terminal. This is so that
-	@#       security issues can be uploaded privately rather than being made
-	@#       public.
+	@#       in addition to outputting errors to the terminal.
 	@set -euo pipefail;\
-		extraargs=""; \
 		files=$$( \
 			git ls-files --deduplicate \
 				'.github/workflows/*.yml' \
 				'.github/workflows/*.yaml' \
 		); \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
-			.venv/bin/zizmor --quiet --pedantic --format sarif $${files} > zizmor.sarif.json; \
-		else \
-			.venv/bin/zizmor --quiet --pedantic --format plain $${files}; \
-		fi
+			.venv/bin/zizmor --quiet --pedantic --format sarif $${files} > zizmor.sarif.json || true; \
+		fi; \
+		.venv/bin/zizmor --quiet --pedantic --format plain $${files}
 
 .PHONY: markdownlint
 markdownlint: node_modules/.installed ## Runs the markdownlint linter.
@@ -197,7 +193,7 @@ markdownlint: node_modules/.installed ## Runs the markdownlint linter.
 	@set -euo pipefail;\
 		files=$$( \
 			git ls-files --deduplicate \
-				'*.md' '**/*.md' \
+				'*.md' \
 				':!:.github/pull_request_template.md' \
 				':!:.github/ISSUE_TEMPLATE/*.md' \
 		); \
@@ -239,14 +235,39 @@ markdownlint: node_modules/.installed ## Runs the markdownlint linter.
 			npx markdownlint  --config .github/template.markdownlint.yaml --dot $${files}; \
 		fi
 
+.PHONY: textlint
+textlint: node_modules/.installed ## Runs the textlint linter.
+	@set -e;\
+		files=$$( \
+			git ls-files --deduplicate \
+				'*.md' \
+				'*.txt' \
+		); \
+		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
+			exit_code=0; \
+			while IFS="" read -r p && [ -n "$$p" ]; do \
+				filePath=$$(echo "$$p" | jq -c -r '.filePath // empty'); \
+				file=$$(realpath --relative-to="." "$${filePath}"); \
+				while IFS="" read -r m && [ -n "$$m" ]; do \
+					line=$$(echo "$$m" | jq -c -r '.loc.start.line'); \
+					endline=$$(echo "$$m" | jq -c -r '.loc.end.line'); \
+					message=$$(echo "$$m" | jq -c -r '.message'); \
+					echo "::error file=$${file},line=$${line},endLine=$${endline}::$${message}"; \
+				done <<<"$$(echo "$$p" | jq -c -r '.messages[] // empty')"; \
+			done <<< "$$(./node_modules/.bin/textlint -c .textlintrc.json --format json $${files} 2>&1 | jq -c '.[]')"; \
+			exit "$${exit_code}"; \
+		else \
+			./node_modules/.bin/textlint -c .textlintrc.json $${files}; \
+		fi
+
 .PHONY: yamllint
 yamllint: .venv/.installed ## Runs the yamllint linter.
 	@set -euo pipefail;\
 		extraargs=""; \
 		files=$$( \
 			git ls-files --deduplicate \
-				'*.yml' '**/*.yml' \
-				'*.yaml' '**/*.yaml' \
+				'*.yml' \
+				'*.yaml' \
 		); \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			extraargs="-f github"; \
@@ -258,8 +279,8 @@ eslint: node_modules/.installed ## Runs eslint.
 	@set -euo pipefail; \
 		files=$$( \
 			git ls-files \
-				'*.ts' '**/*.ts' \
-				'*.js' '**/*.js' \
+				'*.ts' \
+				'*.js' \
 		); \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			set -euo pipefail; \
@@ -297,5 +318,4 @@ clean: ## Delete temporary files.
 	@rm -rf \
 		.venv \
 		node_modules \
-		*.sarif.json \
-		lib
+		*.sarif.json
