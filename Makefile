@@ -44,10 +44,10 @@ help: ## Shows all targets and help from the Makefile (this message).
 			} \
 		}'
 
-package-lock.json:
+package-lock.json: package.json
 	@npm install
 
-node_modules/.installed: package.json package-lock.json
+node_modules/.installed: package-lock.json
 	@npm ci
 	@touch node_modules/.installed
 
