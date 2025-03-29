@@ -12,9 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+uname_s := $(shell uname -s)
+uname_m := $(shell uname -m)
+arch.x86_64 := amd64
+arch.aarch64 := arm64
+arch = $(arch.$(uname_m))
+kernel.Linux := linux
+kernel = $(kernel.$(uname_s))
+
 SHELL := /bin/bash
 OUTPUT_FORMAT ?= $(shell if [ "${GITHUB_ACTIONS}" == "true" ]; then echo "github"; else echo ""; fi)
-REPO_NAME = $(shell basename "$$(pwd)")
+REPO_ROOT = $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+REPO_NAME = $(shell basename "$(REPO_ROOT)")
+
+# slsa-verifier establishes the trust root for SLSA verified tools.
+# TODO(#156): update using renovate
+AQUA_VERSION ?= 2.46.0
+AQUA_REPO ?= github.com/aquaproj/aqua
+AQUA_CHECKSUM.Linux.x86_64 = 6908509aa0c985ea60ed4bfdc69a69f43059a6b539fb16111387e1a7a8d87a9f
+AQUA_CHECKSUM ?= $(AQUA_CHECKSUM.$(uname_s).$(uname_m))
+AQUA_URL = https://$(AQUA_REPO)/releases/download/v$(AQUA_VERSION)/aqua_$(kernel)_$(arch).tar.gz
+AQUA_ROOT_DIR = .aqua
 
 # The help command prints targets in groups. Help documentation in the Makefile
 # uses comments with double hash marks (##). Documentation is printed by the
@@ -58,6 +76,18 @@ node_modules/.installed: package-lock.json
 	@./.venv/bin/pip install -r requirements.txt --require-hashes
 	@touch .venv/.installed
 
+.bin/aqua-$(AQUA_VERSION)/aqua:
+	@set -euo pipefail; \
+		mkdir -p .bin/aqua-$(AQUA_VERSION); \
+		tempfile=$$(mktemp --suffix=".aqua-v$(AQUA_VERSION).tar.gz"); \
+		curl -sSLo "$${tempfile}" "$(AQUA_URL)"; \
+		echo "$(AQUA_CHECKSUM)  $${tempfile}" | sha256sum -c; \
+		tar -x -C .bin/aqua-$(AQUA_VERSION) -f "$${tempfile}"
+
+$(AQUA_ROOT_DIR)/.installed: aqua.yaml .bin/aqua-$(AQUA_VERSION)/aqua
+	@AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)" ./.bin/aqua-$(AQUA_VERSION)/aqua --config aqua.yaml install
+	@touch $@
+
 ## Tools
 #####################################################################
 
@@ -83,11 +113,11 @@ license-headers: ## Update license headers.
 		fi; \
 		for filename in $${files}; do \
 			if ! ( head "$${filename}" | grep -iL "Copyright" > /dev/null ); then \
-				autogen -i --no-code --no-tlc -c "$${name}" -l apache "$${filename}"; \
+				./third_party/mbrukman/autogen/autogen.sh -i --no-code --no-tlc -c "$${name}" -l apache "$${filename}"; \
 			fi; \
 		done; \
 		if ! ( head Makefile | grep -iL "Copyright" > /dev/null ); then \
-			autogen -i --no-code --no-tlc -c "$${name}" -l apache Makefile; \
+			third_party/mbrukman/autogen/autogen.sh -i --no-code --no-tlc -c "$${name}" -l apache Makefile; \
 		fi;
 
 ## Formatting
@@ -123,7 +153,7 @@ yaml-format: node_modules/.installed ## Format YAML files.
 lint: actionlint markdownlint textlint yamllint zizmor ## Run all linters.
 
 .PHONY: actionlint
-actionlint: ## Runs the actionlint linter.
+actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
 	@# NOTE: We need to ignore config files used in tests.
 	@set -euo pipefail;\
 		files=$$( \
@@ -132,6 +162,8 @@ actionlint: ## Runs the actionlint linter.
 				'.github/workflows/*.yaml' \
 				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}"; done \
 		); \
+		PATH="$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION):$(AQUA_ROOT_DIR)/bin:$${PATH}"; \
+		AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)"; \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			actionlint -format '{{range $$err := .}}::error file={{$$err.Filepath}},line={{$$err.Line}},col={{$$err.Column}}::{{$$err.Message}}%0A```%0A{{replace $$err.Snippet "\\n" "%0A"}}%0A```\n{{end}}' -ignore 'SC2016:' $${files}; \
 		else \
@@ -155,7 +187,7 @@ zizmor: .venv/.installed ## Runs the zizmor linter.
 		.venv/bin/zizmor --quiet --pedantic --format plain $${files}
 
 .PHONY: markdownlint
-markdownlint: node_modules/.installed ## Runs the markdownlint linter.
+markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the markdownlint linter.
 	@# NOTE: Issue and PR templates are handled specially so we can disable
 	@# MD041/first-line-heading/first-line-h1 without adding an ugly html comment
 	@# at the top of the file.
@@ -167,6 +199,8 @@ markdownlint: node_modules/.installed ## Runs the markdownlint linter.
 				':!:.github/ISSUE_TEMPLATE/*.md' \
 				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}"; done \
 		); \
+		PATH="$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION):$(AQUA_ROOT_DIR)/bin:$${PATH}"; \
+		AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)"; \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			exit_code=0; \
 			while IFS="" read -r p && [ -n "$$p" ]; do \
@@ -207,7 +241,7 @@ markdownlint: node_modules/.installed ## Runs the markdownlint linter.
 		fi
 
 .PHONY: textlint
-textlint: node_modules/.installed ## Runs the textlint linter.
+textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textlint linter.
 	@set -e;\
 		files=$$( \
 			git ls-files --deduplicate \
@@ -253,6 +287,8 @@ yamllint: .venv/.installed ## Runs the yamllint linter.
 .PHONY: clean
 clean: ## Delete temporary files.
 	@rm -rf \
+		.bin \
+		$(AQUA_ROOT_DIR) \
 		.venv \
 		node_modules \
 		*.sarif.json
