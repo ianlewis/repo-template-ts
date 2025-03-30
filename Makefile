@@ -124,7 +124,18 @@ license-headers: ## Update license headers.
 #####################################################################
 
 .PHONY: format
-format: md-format yaml-format ## Format all files
+format: json-format md-format yaml-format ## Format all files
+
+.PHONY: json-format
+json-format: node_modules/.installed ## Format JSON files.
+	@set -euo pipefail; \
+		files=$$( \
+			git ls-files --deduplicate \
+				'*.json' \
+				'*.json5' \
+				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}"; done \
+		); \
+		npx prettier --write --no-error-on-unmatched-pattern $${files}
 
 .PHONY: md-format
 md-format: node_modules/.installed ## Format Markdown files.

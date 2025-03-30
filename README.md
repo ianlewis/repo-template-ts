@@ -2,7 +2,7 @@
 
 <!-- TODO: update badge urls -->
 
-[![tests](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml/badge.svg)](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml) [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template/badge)](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template)
+[![tests](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml/badge.svg)](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml) [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template/badge)](https://securityscorecards.dev/viewer/?uri=github.com%2Fianlewis%2Frepo-template)
 
 This repository template is maintained for use in repos under
 `github.com/ianlewis`. However, it can be used as a general purpose repository
@@ -12,10 +12,24 @@ starter template.
 
 ### Repository quality
 
-[Formatters and linters](#formatting-and-linting) are maintained to maintain repository code and
-configuration quality through PR checks.
+A set of [formatters and linters](#formatting-and-linting) are maintained to
+maintain repository code and configuration quality through PR checks.
 
-### Security & Dependencies
+### Consistency
+
+We want the template to work as consistenly as possible by minimizing issues
+due to conflicting installed package versions. Running commands and tools
+locally should have the same result between different local development
+machines and CI. Recommended language runtime versions are set via their
+respective ecosystem tooling.
+
+This template strives to minimize outside dependencies on tools and
+configuration requiring only a [minimal set](#requirements) of Unix userspace
+tools and language runtimes to work. Dependencies are downloaded and stored
+locally inside the project directory so they don't conflict with globally
+installed package versions.
+
+### Security
 
 In general, dependencies for tools and GitHub Actions are pinned to improved
 overall project supply-chain security.
@@ -24,7 +38,14 @@ External dependencies on GitHub actions are limited to trusted actions with
 good security practices (e.g. official GitHub-owned actions) to minimize
 exposure to compromise via external repositories.
 
-See also [Recommended repository settings](#recommended-repository-settings).
+Versioning of formatting, linting, and other tool dependencies is done via the
+`requirements.txt` and `packages.json` where possible. This is so that the
+versions can be maintained and updated via dependency automation tooling. This
+repository uses [Mend Renovate](https://www.mend.io/renovate/) because it
+allows more flexibility in configuration than Dependabot.
+
+See also [Recommended repository settings](#recommended-repository-settings)
+for more recommended security settings.
 
 ## Requirements
 
@@ -57,11 +78,16 @@ don't need to be pre-installed:
 - [`yamllint`]: For linting YAML files (installed in local Python virtualenv `.venv`).
 - [`zizmor`]: For linting GitHub Actions workflows (installed in local Python virtualenv `.venv`).
 
-## Makefile
+## Usage
 
-The `Makefile` is used for managing files and maintaining code quality. It
-includes a default `help` target that prints all make targets and their
-descriptions grouped by function.
+The repository is organized to be as self-contained as possible. Commands are
+implemented in the project [Makefile](#makefile).
+
+### Makefile
+
+The `Makefile` is used for running commands, managing files, and maintaining
+code quality. It includes a default `help` target that prints all make targets
+and their descriptions grouped by function.
 
 ```shell
 $ make
@@ -94,9 +120,8 @@ targets and those targets execute with the same settings as they do when run
 locally. This is to give a consistent experience when attempting to reproduce
 pre-submit errors.
 
-Versioning of formatting and linting tools is done via the `requirements.txt`
-and `packages.json` where possible. This is so that the versions can be
-maintained and updated via `dependabot`-like tooling.
+Versioning of formatting, linting, and other tools are managed as tool
+dependencies so they can be more easily maintained.
 
 `Makefile` targets and linter/formatter config are designed to respect
 `.gitignore` and not cross `git` submodules boundaries. However, you will need
@@ -158,13 +183,6 @@ The following tools should be added to the required code scanning results.
 
 1. [ ] **Private vulnerability reporting:**
        Enable private vulnerability reporting as mentioned in [`SECURITY.md`].
-
-#### Dependabot
-
-1. [ ] **Dependabot alerts:**
-       Allow dependabot to update linting and formatting tools.
-2. [ ] **Dependabot security updates:**
-       Allow dependabot to update linting and formatting tools.
 
 #### Code scanning
 
