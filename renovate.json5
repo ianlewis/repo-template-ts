@@ -32,7 +32,7 @@
       pinDigests: true,
     },
     {
-      matchManagers: ["python"],
+      matchManagers: ["pip_requirements"],
       matchUpdateTypes: ["minor", "patch"],
       groupName: "python",
     },

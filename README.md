@@ -168,6 +168,7 @@ The following checks should be marked as required:
 - [ ] `formatting`
 - [ ] `licence-headers`
 - [ ] `markdownlint`
+- [ ] `renovate-config-validator`
 - [ ] `textlint`
 - [ ] `todos`
 - [ ] `yamllint`

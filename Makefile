@@ -47,14 +47,14 @@ AQUA_ROOT_DIR = .aqua
 #	## Group name
 
 .PHONY: help
-help: ## Shows all targets and help from the Makefile (this message).
+help: ## Print all Makefile targets (this message).
 	@echo "$(REPO_NAME) Makefile"
 	@echo "Usage: make [COMMAND]"
 	@echo ""
 	@grep --no-filename -E '^([/a-z.A-Z0-9_%-]+:.*?|)##' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = "(:.*?|)## ?"}; { \
 			if (length($$1) > 0) { \
-				printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2; \
+				printf "  \033[36m%-25s\033[0m %s\n", $$1, $$2; \
 			} else { \
 				if (length($$2) > 0) { \
 					printf "%s\n", $$2; \
@@ -161,7 +161,7 @@ yaml-format: node_modules/.installed ## Format YAML files.
 #####################################################################
 
 .PHONY: lint
-lint: actionlint markdownlint textlint yamllint zizmor ## Run all linters.
+lint: actionlint markdownlint renovate-config-validator textlint yamllint zizmor ## Run all linters.
 
 .PHONY: actionlint
 actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
@@ -250,6 +250,10 @@ markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the ma
 		else \
 			npx markdownlint  --config .github/template.markdownlint.yaml --dot $${files}; \
 		fi
+
+.PHONY: renovate-config-validator
+renovate-config-validator: node_modules/.installed ## Validate Renovate configuration.
+	@./node_modules/.bin/renovate-config-validator --strict
 
 .PHONY: textlint
 textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textlint linter.
