@@ -23,6 +23,17 @@
   // issues is more intuitive.
   configWarningReuseIssue: false,
 
+  // Update the Aqua version set in the Makefile.
+  customManagers: [
+    {
+      customType: "regex",
+      fileMatch: ["Makefile"],
+      matchStrings: ["AQUA_VERSION \??= *(?<currentValue>\\S+)"],
+      depNameTemplate: "aquaproj/aqua",
+      datasourceTemplate: "github-releases",
+    },
+  ],
+
   // Group various ecosystem updates. Security updates are always separate.
   packageRules: [
     {
