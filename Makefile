@@ -119,7 +119,7 @@ license-headers: ## Update license headers.
 				'*.yaml' \
 				'*.yml' \
 				'Makefile' \
-				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}"; done \
+				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
 		name=$$(git config user.name); \
 		if [ "$${name}" == "" ]; then \
@@ -149,7 +149,7 @@ json-format: node_modules/.installed ## Format JSON files.
 			git ls-files --deduplicate \
 				'*.json' \
 				'*.json5' \
-				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}"; done \
+				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
 		npx prettier --write --no-error-on-unmatched-pattern $${files}
 
@@ -160,7 +160,7 @@ md-format: node_modules/.installed ## Format Markdown files.
 		files=$$( \
 			git ls-files --deduplicate \
 				'*.md' \
-				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}"; done \
+				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
 		npx prettier \
 			--tab-width 4 \
@@ -192,7 +192,7 @@ actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
 			git ls-files --deduplicate \
 				'.github/workflows/*.yml' \
 				'.github/workflows/*.yaml' \
-				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}"; done \
+				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
 		PATH="$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION):$(AQUA_ROOT_DIR)/bin:$${PATH}"; \
 		AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)"; \
@@ -211,7 +211,7 @@ zizmor: .venv/.installed ## Runs the zizmor linter.
 			git ls-files --deduplicate \
 				'.github/workflows/*.yml' \
 				'.github/workflows/*.yaml' \
-				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}"; done \
+				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			.venv/bin/zizmor --quiet --pedantic --format sarif $${files} > zizmor.sarif.json || true; \
@@ -229,7 +229,7 @@ markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the ma
 				'*.md' \
 				':!:.github/pull_request_template.md' \
 				':!:.github/ISSUE_TEMPLATE/*.md' \
-				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}"; done \
+				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
 		PATH="$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION):$(AQUA_ROOT_DIR)/bin:$${PATH}"; \
 		AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)"; \
@@ -253,7 +253,7 @@ markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the ma
 			git ls-files --deduplicate \
 				'.github/pull_request_template.md' \
 				'.github/ISSUE_TEMPLATE/*.md' \
-				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}"; done \
+				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			exit_code=0; \
@@ -283,7 +283,7 @@ textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textli
 			git ls-files --deduplicate \
 				'*.md' \
 				'*.txt' \
-				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}"; done \
+				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			exit_code=0; \
@@ -310,7 +310,7 @@ yamllint: .venv/.installed ## Runs the yamllint linter.
 			git ls-files --deduplicate \
 				'*.yml' \
 				'*.yaml' \
-				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}"; done \
+				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			extraargs="-f github"; \
