@@ -49,16 +49,26 @@ help: ## Print all Makefile targets (this message).
 	@echo "$(REPO_NAME) Makefile"
 	@echo "Usage: make [COMMAND]"
 	@echo ""
-	@grep --no-filename -E '^([/a-z.A-Z0-9_%-]+:.*?|)##' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = "(:.*?|)## ?"}; { \
-			if (length($$1) > 0) { \
-				printf "  \033[36m%-25s\033[0m %s\n", $$1, $$2; \
-			} else { \
-				if (length($$2) > 0) { \
-					printf "%s\n", $$2; \
-				} \
-			} \
-		}'
+	@set -euo pipefail; \
+		normal=""; \
+		cyan=""; \
+		if [ -t 1 ]; then \
+			normal=$$(tput sgr0); \
+			cyan=$$(tput setaf 6); \
+		fi; \
+		grep --no-filename -E '^([/a-z.A-Z0-9_%-]+:.*?|)##' $(MAKEFILE_LIST) | \
+			awk \
+				--assign=normal="$${normal}" \
+				--assign=cyan="$${cyan}" \
+				'BEGIN {FS = "(:.*?|)## ?"}; { \
+					if (length($$1) > 0) { \
+						printf("  " cyan "%-25s" normal " %s\n", $$1, $$2); \
+					} else { \
+						if (length($$2) > 0) { \
+							printf("%s\n", $$2); \
+						} \
+					} \
+				}'
 
 package-lock.json: package.json
 	@npm install

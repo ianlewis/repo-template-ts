@@ -94,22 +94,24 @@ $ make
 repo-template Makefile
 Usage: make [COMMAND]
 
-  help                 Shows all targets and help from the Makefile (this message).
+  help                      Print all Makefile targets (this message).
 Tools
-  license-headers      Update license headers.
+  license-headers           Update license headers.
 Formatting
-  format               Format all files
-  md-format            Format Markdown files.
-  yaml-format          Format YAML files.
+  format                    Format all files
+  json-format               Format JSON files.
+  md-format                 Format Markdown files.
+  yaml-format               Format YAML files.
 Linting
-  lint                 Run all linters.
-  actionlint           Runs the actionlint linter.
-  zizmor               Runs the zizmor linter.
-  markdownlint         Runs the markdownlint linter.
-  textlint             Runs the textlint linter.
-  yamllint             Runs the yamllint linter.
+  lint                      Run all linters.
+  actionlint                Runs the actionlint linter.
+  zizmor                    Runs the zizmor linter.
+  markdownlint              Runs the markdownlint linter.
+  renovate-config-validator Validate Renovate configuration.
+  textlint                  Runs the textlint linter.
+  yamllint                  Runs the yamllint linter.
 Maintenance
-  clean                Delete temporary files.
+  clean                     Delete temporary files.
 ```
 
 ### Formatting and linting
