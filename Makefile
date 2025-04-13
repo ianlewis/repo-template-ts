@@ -104,10 +104,18 @@ license-headers: ## Update license headers.
 	@set -euo pipefail; \
 		files=$$( \
 			git ls-files --deduplicate \
+				'*.c' \
+				'*.cpp' \
 				'*.go' \
+				'*.h' \
+				'*.hpp' \
 				'*.ts' \
 				'*.js' \
+				'*.lua' \
 				'*.py' \
+				'*.rb' \
+				'*.rs' \
+				'*.toml' \
 				'*.yaml' \
 				'*.yml' \
 				'Makefile' \
