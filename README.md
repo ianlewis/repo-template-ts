@@ -190,8 +190,8 @@ The following tools should be added to the required code scanning results.
 1. [ ] **CodeQL analysis:**
        Make sure "GitHub Actions (Public Preview)" is enabled in languages.
 2. [ ] **Protection rules:**
-   - [ ] **Security alert severity level:** Errors and warnings
-   - [ ] **Standard alert severity level:** Errors and warnings
+    - [ ] **Security alert severity level:** Errors and warnings
+    - [ ] **Standard alert severity level:** Errors and warnings
 3. [ ] **Secret protection:**
        Get alerts when secrets are detected in the repo.
 4. [ ] **Push protection:**
