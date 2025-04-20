@@ -1,10 +1,10 @@
-# repo-template
+# `repo-template`
 
 <!-- TODO: update badge urls -->
 
 [![tests](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml/badge.svg)](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml) [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template/badge)](https://securityscorecards.dev/viewer/?uri=github.com%2Fianlewis%2Frepo-template)
 
-This repository template is maintained for use in repos under
+This repository template is maintained for use in repositories under
 `github.com/ianlewis`. However, it can be used as a general purpose repository
 starter template.
 
@@ -17,7 +17,7 @@ maintain repository code and configuration quality through PR checks.
 
 ### Consistency
 
-We want the template to work as consistenly as possible by minimizing issues
+We want the template to work as consistently as possible by minimizing issues
 due to conflicting installed package versions. Running commands and tools
 locally should have the same result between different local development
 machines and CI. Recommended language runtime versions are set via their
@@ -68,15 +68,20 @@ The following tools need to be installed:
 The following tools are automatically installed locally to the project and
 don't need to be pre-installed:
 
-- [`actionlint`]: For linting GitHub Actions workflows (installed by Aqua in `.aqua`).
+- [`actionlint`]: For linting GitHub Actions workflows (installed by Aqua in
+  `.aqua`).
 - [`jq`]: For parsing output of some linters (installed by Aqua in `.aqua`).
 - [`markdownlint`]: For linting markdown (installed in local `node_modules`).
 - [`mbrukman/autogen`]: For adding license headers (vendored in `third_party`).
-- [`prettier`]: For formatting markdown and yaml (installed in local `node_modules`).
-- [`shellcheck`]: For linting shell code in GitHub Actions workflows (installed by Aqua in `.aqua`).
+- [`prettier`]: For formatting markdown and YAML files (installed in local
+  `node_modules`).
+- [`shellcheck`]: For linting shell code in GitHub Actions workflows (installed
+  by Aqua in `.aqua`).
 - [`textlint`]: For spelling checks (installed in local `node_modules`).
-- [`yamllint`]: For linting YAML files (installed in local Python virtualenv `.venv`).
-- [`zizmor`]: For linting GitHub Actions workflows (installed in local Python virtualenv `.venv`).
+- [`yamllint`]: For linting YAML files (installed in local Python virtualenv
+  `.venv`).
+- [`zizmor`]: For linting GitHub Actions workflows (installed in local Python
+  virtualenv `.venv`).
 
 ## Usage
 
@@ -125,8 +130,8 @@ pre-submit errors.
 Versioning of formatting, linting, and other tools are managed as tool
 dependencies so they can be more easily maintained.
 
-`Makefile` targets and linter/formatter config are designed to respect
-`.gitignore` and not cross `git` submodules boundaries. However, you will need
+`Makefile` targets and linter/formatter configuration are designed to respect
+`.gitignore` and not cross `git submodule` boundaries. However, you will need
 to add files using `git add` for new files before they are picked up.
 
 `Makefile` targets for linters will also produce human-readable output by
@@ -147,7 +152,7 @@ Files are checked for the existence license headers in pre-submits.
 
 This repository template includes stub documentation. Examples of
 `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, and `SECURITY.md` can be found in the
-[ianlewis/ianlewis](https://github.com/ianlewis/ianlewis) repository and are
+[`ianlewis/ianlewis`](https://github.com/ianlewis/ianlewis) repository and are
 maintained in line with [GitHub recommended community
 standards](https://opensource.guide/).
 
@@ -157,7 +162,7 @@ The following repository settings are recommended in conjunction with this repos
 
 ### Rules
 
-A ruleset should be created for the default branch with branch protection rules
+A `ruleset` should be created for the default branch with branch protection rules
 that follow the [recommendations from OpenSSF
 Scorecard](https://github.com/ossf/scorecard/blob/main/docs/checks.md#branch-protection)
 as closely as possible.
@@ -179,8 +184,8 @@ The following checks should be marked as required:
 
 The following tools should be added to the required code scanning results.
 
-- [ ] CodeQL
-- [ ] zizmor
+- [ ] `CodeQL`
+- [ ] `zizmor`
 
 ### Code security
 
@@ -195,7 +200,7 @@ The following tools should be added to the required code scanning results.
     - [ ] **Security alert severity level:** Errors and warnings
     - [ ] **Standard alert severity level:** Errors and warnings
 3. [ ] **Secret protection:**
-       Get alerts when secrets are detected in the repo.
+       Get alerts when secrets are detected in the repository.
 4. [ ] **Push protection:**
        Block pushing commits with secrets in them.
 
@@ -221,10 +226,10 @@ git merge --no-edit --signoff --squash --allow-unrelated-histories repo-template
 
 A number of language specific templates based on this template are also available:
 
-| Language              | Repository                                                                |
-| --------------------- | ------------------------------------------------------------------------- |
-| Go                    | [ianlewis/repo-template-go](https://github.com/ianlewis/repo-template-go) |
-| TypeScript/JavaScript | [ianlewis/repo-template-ts](https://github.com/ianlewis/repo-template-ts) |
+| Language              | Repository                                                                  |
+| --------------------- | --------------------------------------------------------------------------- |
+| Go                    | [`ianlewis/repo-template-go`](https://github.com/ianlewis/repo-template-go) |
+| TypeScript/JavaScript | [`ianlewis/repo-template-ts`](https://github.com/ianlewis/repo-template-ts) |
 
 ## Contributing
 
