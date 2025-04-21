@@ -299,10 +299,10 @@ textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textli
 					message=$$(echo "$$m" | jq -c -r '.message'); \
 					echo "::error file=$${file},line=$${line},endLine=$${endline}::$${message}"; \
 				done <<<"$$(echo "$$p" | jq -c -r '.messages[] // empty')"; \
-			done <<< "$$(./node_modules/.bin/textlint -c .textlintrc.json --format json $${files} 2>&1 | jq -c '.[]')"; \
+			done <<< "$$(./node_modules/.bin/textlint -c .textlintrc.yaml --format json $${files} 2>&1 | jq -c '.[]')"; \
 			exit "$${exit_code}"; \
 		else \
-			./node_modules/.bin/textlint -c .textlintrc.json $${files}; \
+			./node_modules/.bin/textlint -c .textlintrc.yaml $${files}; \
 		fi
 
 .PHONY: yamllint
