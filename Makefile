@@ -72,17 +72,19 @@ help: ## Print all Makefile targets (this message).
 
 package-lock.json: package.json
 	@npm install
+	@npm audit signatures
 
 node_modules/.installed: package-lock.json
-	@npm ci
+	@npm clean-install
+	@npm audit signatures
 	@touch node_modules/.installed
 
 .venv/bin/activate:
 	@python -m venv .venv
 
-.venv/.installed: .venv/bin/activate requirements.txt
-	@./.venv/bin/pip install -r requirements.txt --require-hashes
-	@touch .venv/.installed
+.venv/.installed: requirements.txt .venv/bin/activate
+	@./.venv/bin/pip install -r $< --require-hashes
+	@touch $@
 
 .bin/aqua-$(AQUA_VERSION)/aqua:
 	@set -euo pipefail; \
