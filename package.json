@@ -10,15 +10,15 @@
     "dictionary-en": "^4.0.0",
     "markdownlint-cli": "0.44.0",
     "prettier": "3.5.3",
-    "textlint": "^14.5.0",
+    "textlint": "^14.6.0",
     "textlint-filter-rule-comments": "^1.2.2",
     "textlint-rule-spelling": "^0.3.0",
     "@stylistic/eslint-plugin-ts": "^4.0.1",
-    "@typescript-eslint/eslint-plugin": "^8.26.1",
-    "@typescript-eslint/parser": "^8.26.1",
-    "eslint": "^9.22.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "eslint": "^9.25.1",
     "eslint-plugin-github": "^6.0.0",
-    "eslint-plugin-prettier": "^5.2.3",
-    "typescript": "^5.8.2"
+    "eslint-plugin-prettier": "^5.2.6",
+    "typescript": "^5.8.3"
   }
 }
