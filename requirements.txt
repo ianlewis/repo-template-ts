@@ -3,18 +3,18 @@
 yamllint==1.37.0 \
     --hash=sha256:c03ab4e79ab4af964c8eb16ac9746880fc76a3bb0ffb14925b9a55220ae7dda0 \
     --hash=sha256:ead81921d4d87216b2528b7a055664708f9fb8267beb0c427cb706ac6ab93580
-zizmor==1.5.2 \
-    --hash=sha256:03b27c46d87e96a0acdf78190fbb674c174f67ded396c74dadd64d7c4ecba680 \
-    --hash=sha256:0c5f656106c430748858ae459c41c9eed09a1e01e5f42015d80c8fe34740d173 \
-    --hash=sha256:506b355c693d40df01bdf26fd1dfcb41801af7b8c51767d4159efdc2655965c4 \
-    --hash=sha256:5e18b06af4208624ef707e7859b07539870ca26b74a89537e1a6bfba2e44fc9a \
-    --hash=sha256:848f04c0d84b085dfb79c66951404372ebf9b3dd0c73076f1baac83db29e74e4 \
-    --hash=sha256:86395dd985ed6bf9acffea8a900b30d8d4dd4c9e20421f16f2db7ad92299e24e \
-    --hash=sha256:8c65b4dbc9690d3f0f5d9756ae0b5ca8d3dfb4f806d82a5195836a3b613ae996 \
-    --hash=sha256:9d40780b19da7901423de80ccce083a8c0d2114e0cf6432aa20d8e60d15e97f6 \
-    --hash=sha256:a40feabc2c043aca60f9edbd35a676d97d684af5b06ed61a7752869c79b3be30 \
-    --hash=sha256:dcef697a88983e7ce6948df1603e2325e2cf5c523828af94615e6c432fa8d98a \
-    --hash=sha256:df1326fe9f9ddcbe9d862a97571c848276882d0ceeee39e18fcfc9ec5c66cd7b
+zizmor==1.6.0 \
+    --hash=sha256:175d62ddf9e70b4ed5918c31cc9b440c4d30d5f96e656ccb6e0020cbadb45c7d \
+    --hash=sha256:261ae90831c3904c34114e2a08ac919d4f5fee3ad808fa033516864fa4c7b09b \
+    --hash=sha256:308b4efee543bfbc08494a0d941435657813757889161c56d67f7b86fb5b3a6d \
+    --hash=sha256:321da31fd51b768f81c7fad7417fe960c09c1cff950e101e1b0c251fa679e58f \
+    --hash=sha256:6ed19a6e10d8cb4377bafad4e1ef1ef1bbc87c7470c8379693ded4b1a9cc0ba3 \
+    --hash=sha256:741b2cf964080c8b62d68f088f9f0aecac3e06b1ab542ec432d17a1ba0e46176 \
+    --hash=sha256:a50e3705adbfc76532b0beade03eea6959c23cb32d32f6e447df95606ed31776 \
+    --hash=sha256:a748f38249286ac53662b0b688feb459fc4c72d7b896f9e3cee6310d9bb0d457 \
+    --hash=sha256:aa22ddebe102c7c9b2e803387bebd07f0224ddb6e6e406b3e4f12fb08a86fa13 \
+    --hash=sha256:b14cd65ec21ce4020f275a3cb392d5c25cefb92243bc211b8597fd6b2be0e17f \
+    --hash=sha256:f80e07421bed95b85d785b3a60ddd80b52a80f6b99a60e7c756e96d786027d45
 
 # NOTE: The following dependencies are included because it is not pinned using
 # '==' by yamllint and this is required by pip --require-hashes.
