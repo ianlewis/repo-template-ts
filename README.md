@@ -4,6 +4,8 @@
 
 [![tests](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml/badge.svg)](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml) [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template/badge)](https://securityscorecards.dev/viewer/?uri=github.com%2Fianlewis%2Frepo-template)
 
+<!-- TODO: Update README contents. -->
+
 This repository template is maintained for use in repositories under
 `github.com/ianlewis`. However, it can be used as a general purpose repository
 starter template.
@@ -78,6 +80,8 @@ don't need to be pre-installed:
 - [`shellcheck`]: For linting shell code in GitHub Actions workflows (installed
   by Aqua in `.aqua`).
 - [`textlint`]: For spelling checks (installed in local `node_modules`).
+- [`todos`]: For checking for outstanding TODOs in code (installed by Aqua in
+  `.aqua`).
 - [`yamllint`]: For linting YAML files (installed in local Python virtualenv
   `.venv`).
 - [`zizmor`]: For linting GitHub Actions workflows (installed in local Python
@@ -248,5 +252,6 @@ documentation.
 [`prettier`]: https://prettier.io/
 [`shellcheck`]: https://www.shellcheck.net/
 [`textlint`]: https://textlint.github.io/
+[`todos`]: https://github.com/ianlewis/todos
 [`yamllint`]: https://www.yamllint.com/
 [`zizmor`]: https://woodruffw.github.io/zizmor/
