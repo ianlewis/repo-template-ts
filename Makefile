@@ -307,6 +307,26 @@ textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textli
 			./node_modules/.bin/textlint -c .textlintrc.yaml $${files}; \
 		fi
 
+.PHONY: todos
+todos: $(AQUA_ROOT_DIR)/.installed ## Check for outstanding TODOs.
+	@set -euo pipefail;\
+		files=$$( \
+			git ls-files --deduplicate \
+				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
+		); \
+		PATH="$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION):$(AQUA_ROOT_DIR)/bin:$${PATH}"; \
+		AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)"; \
+		output="default"; \
+		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
+			output="github"; \
+		fi; \
+		TODOS=$$(todos --output "$${output}" --todo-types="FIXME,Fixme,fixme,BUG,Bug,bug,XXX,COMBAK"); \
+		# TODO: remove when todos v0.13.0 is released. \
+		if [ "$${TODOS}" != "" ]; then \
+			echo "$${TODOS}"; \
+			exit 1; \
+		fi
+
 .PHONY: yamllint
 yamllint: .venv/.installed ## Runs the yamllint linter.
 	@set -euo pipefail;\
