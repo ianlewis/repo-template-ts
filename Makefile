@@ -165,9 +165,11 @@ json-format: node_modules/.installed ## Format JSON files.
 				'*.json5' \
 				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
 		./node_modules/.bin/prettier \
 			--write \
-			--no-error-on-unmatched-pattern \
 			$${files}
 
 .PHONY: md-format
@@ -179,10 +181,12 @@ md-format: node_modules/.installed ## Format Markdown files.
 				'*.md' \
 				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
 		# NOTE: prettier uses .editorconfig for tab-width. \
 		./node_modules/.bin/prettier \
 			--write \
-			--no-error-on-unmatched-pattern \
 			$${files}
 
 .PHONY: yaml-format
@@ -193,9 +197,11 @@ yaml-format: node_modules/.installed ## Format YAML files.
 				'*.yml' \
 				'*.yaml' \
 		); \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
 		./node_modules/.bin/prettier \
 			--write \
-			--no-error-on-unmatched-pattern \
 			$${files}
 
 .PHONY: js-format
@@ -206,9 +212,11 @@ js-format: node_modules/.installed ## Format YAML files.
 				'*.js' '**/*.js' \
 				'*.javascript' '**/*.javascript' \
 		); \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
 		./node_modules/.bin/prettier \
 			--write \
-			--no-error-on-unmatched-pattern \
 			$${files}
 
 .PHONY: ts-format
@@ -219,9 +227,11 @@ ts-format: node_modules/.installed ## Format YAML files.
 				'*.ts' '**/*.ts' \
 				'*.typescript' '**/*.typescript' \
 		);  \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
 		./node_modules/.bin/prettier \
 			--write \
-			--no-error-on-unmatched-pattern \
 			$${files}
 
 ## Linting
@@ -240,6 +250,9 @@ actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
 				'.github/workflows/*.yaml' \
 				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
 		PATH="$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION):$(AQUA_ROOT_DIR)/bin:$${PATH}"; \
 		AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)"; \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
@@ -262,6 +275,9 @@ zizmor: .venv/.installed ## Runs the zizmor linter.
 				'.github/workflows/*.yaml' \
 				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			.venv/bin/zizmor \
 				--quiet \
@@ -288,6 +304,9 @@ markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the ma
 				':!:.github/ISSUE_TEMPLATE/*.md' \
 				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
 		PATH="$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION):$(AQUA_ROOT_DIR)/bin:$${PATH}"; \
 		AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)"; \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
@@ -315,6 +334,9 @@ markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the ma
 				'.github/ISSUE_TEMPLATE/*.md' \
 				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			exit_code=0; \
 			while IFS="" read -r p && [ -n "$$p" ]; do \
@@ -349,6 +371,9 @@ textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textli
 				':!:requirements.txt' \
 				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			exit_code=0; \
 			while IFS="" read -r p && [ -n "$$p" ]; do \
@@ -376,6 +401,9 @@ todos: $(AQUA_ROOT_DIR)/.installed ## Check for outstanding TODOs.
 			git ls-files --deduplicate \
 				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
 		PATH="$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION):$(AQUA_ROOT_DIR)/bin:$${PATH}"; \
 		AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)"; \
 		output="default"; \
@@ -403,6 +431,9 @@ yamllint: .venv/.installed ## Runs the yamllint linter.
 				'*.yaml' \
 				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
 		format="standard"; \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			format="github"; \
@@ -421,6 +452,9 @@ eslint: node_modules/.installed ## Runs eslint.
 				'*.ts' \
 				'*.js' \
 		); \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			set -euo pipefail; \
 			exit_code=0; \
