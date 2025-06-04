@@ -12,5 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// eslint-disable-next-line no-console
-console.log("Hello World!");
+import { jest } from "@jest/globals";
+
+import { hello } from "./hello.js";
+
+describe("hello", () => {
+  it("should log 'Hello, world!'", () => {
+    const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+
+    hello();
+
+    expect(consoleSpy).toHaveBeenCalledWith("Hello World!");
+
+    consoleSpy.mockRestore();
+  });
+});
