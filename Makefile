@@ -210,7 +210,8 @@ js-format: node_modules/.installed ## Format YAML files.
 		files=$$( \
 			git ls-files --deduplicate \
 				'*.js' \
-				'*.javascript' \
+				'*.cjs' \
+				'*.mjs' \
 				'*.jsx' \
 		); \
 		if [ "$${files}" == "" ]; then \
@@ -226,7 +227,8 @@ ts-format: node_modules/.installed ## Format YAML files.
 		files=$$( \
 			git ls-files --deduplicate \
 				'*.ts' \
-				'*.typescript' \
+				'*.cts' \
+				'*.mts' \
 				'*.tsx' \
 		);  \
 		if [ "$${files}" == "" ]; then \
@@ -451,8 +453,14 @@ eslint: node_modules/.installed ## Runs eslint.
 	@set -euo pipefail; \
 		files=$$( \
 			git ls-files --deduplicate \
-				'*.ts' \
 				'*.js' \
+				'*.cjs' \
+				'*.mjs' \
+				'*.jsx' \
+				'*.ts' \
+				'*.cts' \
+				'*.mts' \
+				'*.tsx' \
 		); \
 		if [ "$${files}" == "" ]; then \
 			exit 0; \

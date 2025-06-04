@@ -12,6 +12,7 @@
     "@typescript-eslint/parser": "8.26.1",
     "dictionary-en": "^4.0.0",
     "eslint": "9.22.0",
+    "eslint-import-resolver-typescript": "^4.4.2",
     "eslint-plugin-github": "6.0.0",
     "eslint-plugin-prettier": "5.2.3",
     "markdownlint-cli": "0.44.0",
