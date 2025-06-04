@@ -208,9 +208,9 @@ yaml-format: node_modules/.installed ## Format YAML files.
 js-format: node_modules/.installed ## Format YAML files.
 	@set -euo pipefail; \
 		files=$$( \
-			git ls-files \
-				'*.js' '**/*.js' \
-				'*.javascript' '**/*.javascript' \
+			git ls-files --deduplicate \
+				'*.js' \
+				'*.javascript' \
 		); \
 		if [ "$${files}" == "" ]; then \
 			exit 0; \
@@ -223,9 +223,9 @@ js-format: node_modules/.installed ## Format YAML files.
 ts-format: node_modules/.installed ## Format YAML files.
 	@set -euo pipefail; \
 		files=$$( \
-			git ls-files \
-				'*.ts' '**/*.ts' \
-				'*.typescript' '**/*.typescript' \
+			git ls-files --deduplicate \
+				'*.ts' \
+				'*.typescript' \
 		);  \
 		if [ "$${files}" == "" ]; then \
 			exit 0; \
@@ -448,7 +448,7 @@ yamllint: .venv/.installed ## Runs the yamllint linter.
 eslint: node_modules/.installed ## Runs eslint.
 	@set -euo pipefail; \
 		files=$$( \
-			git ls-files \
+			git ls-files --deduplicate \
 				'*.ts' \
 				'*.js' \
 		); \

@@ -1,7 +1,11 @@
 # `repo-template-ts`
 
+<!-- TODO: update badge urls -->
+
 [![tests](https://github.com/ianlewis/repo-template-ts/actions/workflows/pre-submit.units.yml/badge.svg)](https://github.com/ianlewis/repo-template-ts/actions/workflows/pre-submit.units.yml)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template-ts/badge)](https://securityscorecards.dev/viewer/?uri=github.com%2Fianlewis%2Frepo-template-ts)
+
+<!-- TODO: Update README contents. -->
 
 Repository template for TypeScript repositories under `github.com/ianlewis`.
 
