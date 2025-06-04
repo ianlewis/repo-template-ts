@@ -211,6 +211,7 @@ js-format: node_modules/.installed ## Format YAML files.
 			git ls-files --deduplicate \
 				'*.js' \
 				'*.javascript' \
+				'*.jsx' \
 		); \
 		if [ "$${files}" == "" ]; then \
 			exit 0; \
@@ -226,6 +227,7 @@ ts-format: node_modules/.installed ## Format YAML files.
 			git ls-files --deduplicate \
 				'*.ts' \
 				'*.typescript' \
+				'*.tsx' \
 		);  \
 		if [ "$${files}" == "" ]; then \
 			exit 0; \
