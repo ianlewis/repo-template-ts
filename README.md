@@ -13,6 +13,9 @@ This repository template is maintained for use in repositories under
 `github.com/ianlewis`. However, it can be used as a general purpose TypeScript
 repository starter template.
 
+This repository is set up to make use of ESM modules and makes use of
+[Jest](https://jestjs.io/) for unit tests.
+
 ## Goals
 
 ### Repository quality

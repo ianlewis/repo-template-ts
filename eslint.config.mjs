@@ -23,7 +23,7 @@ export default [
   github.getFlatConfigs().react,
   ...github.getFlatConfigs().typescript,
   {
-    files: ["**/*.{js,cjs,mjs,jsx,mjsx,ts,cts,tsx,mtsx}"],
+    files: ["**/*.{js,cjs,mjs,jsx,mjsx,ts,cts,mts,tsx,mtsx}"],
     ignores: ["**/coverage", "**/dist", "**/linter", "**/node_modules"],
     plugins: {
       "@stylistic/ts": stylisticTs,
