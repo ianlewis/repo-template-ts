@@ -114,6 +114,8 @@ Usage: make [COMMAND]
   help                      Print all Makefile targets (this message).
 Build
   compile                   Compile TypeScript.
+Testing
+  unit-test                 Runs all unit tests.
 Tools
   license-headers           Update license headers.
 Formatting
