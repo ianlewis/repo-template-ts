@@ -107,6 +107,15 @@ $(AQUA_ROOT_DIR)/.installed: aqua.yaml .bin/aqua-$(AQUA_VERSION)/aqua
 compile: ## Compile TypeScript.
 	@./node_modules/.bin/tsc
 
+## Testing
+#####################################################################
+
+.PHONY: unit-test
+unit-test: compile ## Runs all unit tests.
+	# NOTE: Make sure the package builds.
+	@NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 \
+		./node_modules/.bin/jest
+
 ## Tools
 #####################################################################
 
@@ -213,6 +222,7 @@ js-format: node_modules/.installed ## Format YAML files.
 				'*.cjs' \
 				'*.mjs' \
 				'*.jsx' \
+				'*.mjsx' \
 		); \
 		if [ "$${files}" == "" ]; then \
 			exit 0; \
@@ -230,6 +240,7 @@ ts-format: node_modules/.installed ## Format YAML files.
 				'*.cts' \
 				'*.mts' \
 				'*.tsx' \
+				'*.mtsx' \
 		);  \
 		if [ "$${files}" == "" ]; then \
 			exit 0; \
@@ -457,10 +468,12 @@ eslint: node_modules/.installed ## Runs eslint.
 				'*.cjs' \
 				'*.mjs' \
 				'*.jsx' \
+				'*.mjsx' \
 				'*.ts' \
 				'*.cts' \
 				'*.mts' \
 				'*.tsx' \
+				'*.mtsx' \
 		); \
 		if [ "$${files}" == "" ]; then \
 			exit 0; \
