@@ -167,7 +167,6 @@ json-format: node_modules/.installed ## Format JSON files.
 
 .PHONY: md-format
 md-format: node_modules/.installed ## Format Markdown files.
-	@#NOTE: tab-width of 4 is recommended for Markdown files.
 	@set -euo pipefail; \
 		files=$$( \
 			git ls-files --deduplicate \
