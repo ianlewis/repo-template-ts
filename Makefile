@@ -357,29 +357,18 @@ textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textli
 .PHONY: todos
 todos: $(AQUA_ROOT_DIR)/.installed ## Check for outstanding TODOs.
 	@set -euo pipefail;\
-		files=$$( \
-			git ls-files --deduplicate \
-				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
-		); \
-		if [ "$${files}" == "" ]; then \
-			exit 0; \
-		fi; \
 		PATH="$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION):$(AQUA_ROOT_DIR)/bin:$${PATH}"; \
 		AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)"; \
 		output="default"; \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			output="github"; \
 		fi; \
-		TODOS=$$( \
-			todos \
-				--output "$${output}" \
-				--todo-types="FIXME,Fixme,fixme,BUG,Bug,bug,XXX,COMBAK" \
-		); \
-		# TODO: remove when todos v0.13.0 is released. \
-		if [ "$${TODOS}" != "" ]; then \
-			echo "$${TODOS}"; \
-			exit 1; \
-		fi
+		# NOTE: todos does not use `git ls-files` because many files might be \
+		# 		unsupported and generate an error if passed directly on the \
+		# 		command line. \
+		todos \
+			--output "$${output}" \
+			--todo-types="FIXME,Fixme,fixme,BUG,Bug,bug,XXX,COMBAK"
 
 .PHONY: yamllint
 yamllint: .venv/.installed ## Runs the yamllint linter.
