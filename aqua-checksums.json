@@ -86,6 +86,31 @@
       "algorithm": "sha256"
     },
     {
+      "id": "github_release/github.com/jqlang/jq/jq-1.8.0/jq-linux-amd64",
+      "checksum": "8926C33326111BCD67A47A970B5A5DB933EF9194AD925994934C639C76A0605C",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/jqlang/jq/jq-1.8.0/jq-linux-arm64",
+      "checksum": "1084E6BF5060A463DAF77193888D326C83E56BCFBC18A52E6EAA99DBE82A8B54",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/jqlang/jq/jq-1.8.0/jq-macos-amd64",
+      "checksum": "A594F3740BF570F0DBC43FF102A9034C17719D1BB5B40F0192751234D67F172A",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/jqlang/jq/jq-1.8.0/jq-macos-arm64",
+      "checksum": "AAF1EFBB376D6E3EAF61F63807C32C1DF519F5857DFC4F581826FA2DF4B715AE",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/jqlang/jq/jq-1.8.0/jq-windows-amd64.exe",
+      "checksum": "B45FCBB27DCB9E9848AC39889A8BF86457B8D9D31E7C56387C6EAB80008FD1F4",
+      "algorithm": "sha256"
+    },
+    {
       "id": "github_release/github.com/koalaman/shellcheck/v0.10.0/shellcheck-v0.10.0.darwin.aarch64.tar.xz",
       "checksum": "BBD2F14826328EEE7679DA7221F2BC3AFB011F6A928B848C80C321F6046DDF81",
       "algorithm": "sha256"
