@@ -65,7 +65,10 @@ Required runtimes:
 The following tools need to be installed:
 
 - [`git`]: For repository management.
-- `awk`, `bash`, `grep`, `head`, `rm`, `sha256sum`: Standard Unix tools.
+- `awk`, `bash`, `grep`, `head`, `rm`, `sha256sum`, `uname`: Standard
+  Unix tools.
+- GNU `make`: For running commands.
+- `curl`, `tar`, `gzip`: For extracting archives.
 
 The following tools are automatically installed locally to the project and
 don't need to be pre-installed:
