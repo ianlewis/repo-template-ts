@@ -198,7 +198,7 @@ yaml-format: node_modules/.installed ## Format YAML files.
 #####################################################################
 
 .PHONY: lint
-lint: actionlint markdownlint renovate-config-validator textlint todos yamllint zizmor ## Run all linters.
+lint: actionlint fixme markdownlint renovate-config-validator textlint yamllint zizmor ## Run all linters.
 
 .PHONY: actionlint
 actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
@@ -224,32 +224,21 @@ actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
 			actionlint $${files}; \
 		fi
 
-.PHONY: zizmor
-zizmor: .venv/.installed ## Runs the zizmor linter.
-	@# NOTE: On GitHub actions this outputs SARIF format to zizmor.sarif.json
-	@#       in addition to outputting errors to the terminal.
+.PHONY: fixme
+fixme: $(AQUA_ROOT_DIR)/.installed ## Check for outstanding FIXMEs.
 	@set -euo pipefail;\
-		files=$$( \
-			git ls-files --deduplicate \
-				'.github/workflows/*.yml' \
-				'.github/workflows/*.yaml' \
-				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
-		); \
-		if [ "$${files}" == "" ]; then \
-			exit 0; \
-		fi; \
+		PATH="$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION):$(AQUA_ROOT_DIR)/bin:$${PATH}"; \
+		AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)"; \
+		output="default"; \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
-			.venv/bin/zizmor \
-				--quiet \
-				--pedantic \
-				--format sarif \
-				$${files} > zizmor.sarif.json || true; \
+			output="github"; \
 		fi; \
-		.venv/bin/zizmor \
-			--quiet \
-			--pedantic \
-			--format plain \
-			$${files}
+		# NOTE: todos does not use `git ls-files` because many files might be \
+		# 		unsupported and generate an error if passed directly on the \
+		# 		command line. \
+		todos \
+			--output "$${output}" \
+			--todo-types="FIXME,Fixme,fixme,BUG,Bug,bug,XXX,COMBAK"
 
 .PHONY: markdownlint
 markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the markdownlint linter.
@@ -354,22 +343,6 @@ textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textli
 				$${files}; \
 		fi
 
-.PHONY: todos
-todos: $(AQUA_ROOT_DIR)/.installed ## Check for outstanding TODOs.
-	@set -euo pipefail;\
-		PATH="$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION):$(AQUA_ROOT_DIR)/bin:$${PATH}"; \
-		AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)"; \
-		output="default"; \
-		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
-			output="github"; \
-		fi; \
-		# NOTE: todos does not use `git ls-files` because many files might be \
-		# 		unsupported and generate an error if passed directly on the \
-		# 		command line. \
-		todos \
-			--output "$${output}" \
-			--todo-types="FIXME,Fixme,fixme,BUG,Bug,bug,XXX,COMBAK"
-
 .PHONY: yamllint
 yamllint: .venv/.installed ## Runs the yamllint linter.
 	@set -euo pipefail;\
@@ -393,8 +366,51 @@ yamllint: .venv/.installed ## Runs the yamllint linter.
 			--format "$${format}" \
 			$${files}
 
+.PHONY: zizmor
+zizmor: .venv/.installed ## Runs the zizmor linter.
+	@# NOTE: On GitHub actions this outputs SARIF format to zizmor.sarif.json
+	@#       in addition to outputting errors to the terminal.
+	@set -euo pipefail;\
+		files=$$( \
+			git ls-files --deduplicate \
+				'.github/workflows/*.yml' \
+				'.github/workflows/*.yaml' \
+				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
+		); \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
+		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
+			.venv/bin/zizmor \
+				--quiet \
+				--pedantic \
+				--format sarif \
+				$${files} > zizmor.sarif.json || true; \
+		fi; \
+		.venv/bin/zizmor \
+			--quiet \
+			--pedantic \
+			--format plain \
+			$${files}
+
 ## Maintenance
 #####################################################################
+
+.PHONY: todos
+todos: $(AQUA_ROOT_DIR)/.installed ## Check for outstanding TODOs.
+	@set -euo pipefail;\
+		PATH="$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION):$(AQUA_ROOT_DIR)/bin:$${PATH}"; \
+		AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)"; \
+		output="default"; \
+		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
+			output="github"; \
+		fi; \
+		# NOTE: todos does not use `git ls-files` because many files might be \
+		# 		unsupported and generate an error if passed directly on the \
+		# 		command line. \
+		todos \
+			--output "$${output}" \
+			--todo-types="TODO,Todo,todo,FIXME,Fixme,fixme,BUG,Bug,bug,XXX,COMBAK"
 
 .PHONY: clean
 clean: ## Delete temporary files.
