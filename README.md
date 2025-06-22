@@ -23,13 +23,13 @@ This repository is set up to make use of ESM modules and makes use of
 A set of [formatters and linters](#formatting-and-linting) are maintained to
 maintain repository code and configuration quality through PR checks.
 
-### Consistency
+### Consistency & Reproducibility
 
-We want the template to work as consistently as possible by minimizing issues
-due to conflicting installed package versions. Running commands and tools
-locally should have the same result between different local development
-machines and CI. Recommended language runtime versions are set via their
-respective ecosystem tooling.
+Repositories created by this template should work as consistently as possible by
+minimizing issues due to conflicting installed package versions. Running
+commands and tools locally should have the same result between different local
+development machines and CI. Recommended language runtime versions are set via
+their respective ecosystem tooling.
 
 This template strives to minimize outside dependencies on tools and
 configuration requiring only a [minimal set](#requirements) of Unix userspace
@@ -71,7 +71,10 @@ Required runtimes:
 The following tools need to be installed:
 
 - [`git`]: For repository management.
-- `awk`, `bash`, `grep`, `head`, `rm`, `sha256sum`: Standard Unix tools.
+- `awk`, `bash`, `grep`, `head`, `rm`, `sha256sum`, `uname`: Standard
+  Unix tools.
+- GNU `make`: For running commands.
+- `curl`, `tar`, `gzip`: For extracting archives.
 
 The following tools are automatically installed locally to the project and
 don't need to be pre-installed:
@@ -120,22 +123,23 @@ Tools
   license-headers           Update license headers.
 Formatting
   format                    Format all files
+  js-format                 Format YAML files.
   json-format               Format JSON files.
   md-format                 Format Markdown files.
   yaml-format               Format YAML files.
-  js-format                 Format YAML files.
   ts-format                 Format YAML files.
 Linting
   lint                      Run all linters.
   actionlint                Runs the actionlint linter.
-  zizmor                    Runs the zizmor linter.
+  eslint                    Runs eslint.
+  fixme                     Check for outstanding FIXMEs.
   markdownlint              Runs the markdownlint linter.
   renovate-config-validator Validate Renovate configuration.
   textlint                  Runs the textlint linter.
-  todos                     Check for outstanding TODOs.
   yamllint                  Runs the yamllint linter.
-  eslint                    Runs eslint.
+  zizmor                    Runs the zizmor linter.
 Maintenance
+  todos                     Check for outstanding TODOs.
   clean                     Delete temporary files.
 ```
 
@@ -166,7 +170,7 @@ The `license-headers` make target will add license headers to files that are
 missing it with the Copyright holder set to the current value of `git config
 user.name`.
 
-Files are checked for the existence license headers in pre-submits.
+Files are checked for the existence license headers in status checks.
 
 ## Project documentation
 
@@ -176,19 +180,39 @@ This repository template includes stub documentation. Examples of
 maintained in line with [GitHub recommended community
 standards](https://opensource.guide/).
 
-## Recommended repository settings
+## Repository creation checklist
+
+When creating a new repository from this template, the following checklist
+is recommended to ensure the repository is set up correctly.
+
+### Update configuration files
+
+Files that should be updated include a TODO comment to indicate what changes
+should made. You can run `make todos` to list all TODOs in the repository.
+
+```shell
+$ make todos
+.github/workflows/pre-submit.units.yml:113:# TODO: Remove the next line for private repositories with GitHub Advanced Security.
+.github/workflows/schedule.scorecard.yml:80:# TODO: Remove the next line for private repositories with GitHub Advanced Security.
+CODEOWNERS:1:# TODO: Update CODEOWNERS
+CODE_OF_CONDUCT.md:61:<!-- TODO: update Code of Conduct contact email -->
+README.md:3:<!-- TODO: update badge urls -->
+README.md:7:<!-- TODO: Update README contents. -->
+```
+
+### Recommended repository settings
 
 The following repository settings are recommended in conjunction with this
 repository template.
 
-### Rules
+#### Rulesets
 
 A `ruleset` should be created for the default branch with branch protection
 rules that follow the [recommendations from OpenSSF
 Scorecard](https://github.com/ossf/scorecard/blob/main/docs/checks.md#branch-protection)
 as closely as possible.
 
-#### Required Checks
+##### Required Checks
 
 The following checks should be marked as required:
 
@@ -199,22 +223,23 @@ The following checks should be marked as required:
 - [ ] `markdownlint`
 - [ ] `renovate-config-validator`
 - [ ] `textlint`
-- [ ] `todos`
+- [ ] `fixme`
 - [ ] `yamllint`
+- [ ] `zizmor`
 
-#### Require code scanning results
+##### Require code scanning results
 
 The following tools should be added to the required code scanning results.
 
 - [ ] `CodeQL`
 - [ ] `zizmor`
 
-### Code security
+#### Code security
 
 1. [ ] **Private vulnerability reporting:**
-       Enable private vulnerability reporting as mentioned in [`SECURITY.md`].
+       Enable [private vulnerability reporting] as mentioned in [`SECURITY.md`].
 
-#### Code scanning
+##### Code scanning
 
 1. [ ] **CodeQL analysis:**
        Make sure "GitHub Actions (Public Preview)" is enabled in languages.
@@ -249,6 +274,7 @@ git merge --no-edit --signoff --squash --allow-unrelated-histories --log repo-te
 PRs may be accepted to this template. See [`CONTRIBUTING.md`] for contributor
 documentation.
 
+[private vulnerability reporting]: https://docs.github.com/en/code-security/security-advisories/working-with-repository-security-advisories/configuring-private-vulnerability-reporting-for-a-repository
 [`CONTRIBUTING.md`]: ./CONTRIBUTING.md
 [`SECURITY.md`]: ./SECURITY.md
 [`Node.js`]: https://nodejs.org/

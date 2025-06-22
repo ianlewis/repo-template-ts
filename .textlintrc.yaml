@@ -21,12 +21,14 @@ rules:
   spelling:
     language: "en"
     skipPatterns:
+      # Terminology
+      - "ESM" # ECMAScript Modules
+
       - "CHANGELOG"
       - "CODEOWNER"
       - "CLI"
       - "CVSS"
       - "DCO"
-      - "ESM" # ECMAScript Modules
       - "PR"
       - "UI"
       - "YAML"
@@ -43,6 +45,8 @@ rules:
       - "/[Ff]ormatter/"
       - "/[Ll]inter/"
       - "/[Pp]re/"
+      - "/[Rr]eproducibility/"
+      - "/[Rr]uleset/"
       - "/[Rr]untime/"
       - "/[Ss]exualized/"
       - "/[Ss]ocio-economic/"
