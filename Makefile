@@ -311,7 +311,7 @@ renovate-config-validator: node_modules/.installed ## Validate Renovate configur
 
 .PHONY: textlint
 textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textlint linter.
-	@set -e;\
+	@set -euo pipefail;\
 		files=$$( \
 			git ls-files --deduplicate \
 				'*.md' \
