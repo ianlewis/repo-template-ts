@@ -104,7 +104,7 @@ $(AQUA_ROOT_DIR)/.installed: .aqua.yaml .bin/aqua-$(AQUA_VERSION)/aqua
 #####################################################################
 
 .PHONY: compile
-compile: ## Compile TypeScript.
+compile: node_modules/.installed ## Compile TypeScript.
 	@./node_modules/.bin/tsc
 
 ## Testing
@@ -114,7 +114,7 @@ compile: ## Compile TypeScript.
 unit-test: compile ## Runs all unit tests.
 	# NOTE: Make sure the package builds.
 	@NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 \
-		./node_modules/.bin/jest
+		./node_modules/.bin/jest --coverage
 
 ## Tools
 #####################################################################
