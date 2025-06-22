@@ -71,8 +71,7 @@ help: ## Print all Makefile targets (this message).
 				}'
 
 package-lock.json: package.json
-	@npm install
-	@npm audit signatures
+	@npm install --package-lock-only --no-audit --no-fund --no-save
 
 node_modules/.installed: package-lock.json
 	@npm clean-install
