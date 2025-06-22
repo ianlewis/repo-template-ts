@@ -20,8 +20,8 @@ export default {
   collectCoverage: true,
   collectCoverageFrom: ["./src/**"],
   coverageDirectory: "./coverage",
-  coveragePathIgnorePatterns: ["/node_modules/", "/dist/"],
-  coverageReporters: ["json-summary", "text", "lcov"],
+  coveragePathIgnorePatterns: ["/node_modules/", "/lib/"],
+  coverageReporters: ["clover", "json", "json-summary", "text", "lcov"],
   extensionsToTreatAsEsm: [".ts"],
   moduleFileExtensions: ["ts", "js"],
   preset: "ts-jest",
@@ -29,7 +29,7 @@ export default {
   resolver: "ts-jest-resolver",
   testEnvironment: "node",
   testMatch: ["**/*.test.ts"],
-  testPathIgnorePatterns: ["/dist/", "/node_modules/"],
+  testPathIgnorePatterns: ["/lib/", "/node_modules/"],
   transform: {
     "^.+\\.ts$": [
       "ts-jest",

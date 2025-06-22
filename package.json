@@ -2,7 +2,7 @@
   "name": "repo-template-ts",
   "version": "0.0.0",
   "type": "module",
-  "main": "lib/main.js",
+  "main": "lib/index.js",
   "engines": {
     "node": ">=22.0.0 <23"
   },

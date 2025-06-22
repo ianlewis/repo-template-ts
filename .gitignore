@@ -13,9 +13,6 @@ node_modules/
 # Coverage files
 coverage
 
-# Generated intermediate JavaScript code
-dist/
-
 # Rest pulled from https://github.com/github/gitignore/blob/master/Node.gitignore
 # Logs
 logs
