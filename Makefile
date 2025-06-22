@@ -93,8 +93,10 @@ node_modules/.installed: package-lock.json
 		echo "$(AQUA_CHECKSUM)  $${tempfile}" | sha256sum -c; \
 		tar -x -C .bin/aqua-$(AQUA_VERSION) -f "$${tempfile}"
 
-$(AQUA_ROOT_DIR)/.installed: aqua.yaml .bin/aqua-$(AQUA_VERSION)/aqua
-	@AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)" ./.bin/aqua-$(AQUA_VERSION)/aqua --config aqua.yaml install
+$(AQUA_ROOT_DIR)/.installed: .aqua.yaml .bin/aqua-$(AQUA_VERSION)/aqua
+	@AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)" ./.bin/aqua-$(AQUA_VERSION)/aqua \
+		--config .aqua.yaml \
+		install
 	@touch $@
 
 ## Tools
@@ -387,6 +389,7 @@ zizmor: .venv/.installed ## Runs the zizmor linter.
 				$${files} > zizmor.sarif.json || true; \
 		fi; \
 		.venv/bin/zizmor \
+			--config .zizmor.yml \
 			--quiet \
 			--pedantic \
 			--format plain \
