@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+SHELL := /usr/bin/env bash
+
 uname_s := $(shell uname -s)
 uname_m := $(shell uname -m)
 arch.x86_64 := amd64
@@ -19,7 +21,6 @@ arch = $(arch.$(uname_m))
 kernel.Linux := linux
 kernel = $(kernel.$(uname_s))
 
-SHELL := /usr/bin/env bash
 OUTPUT_FORMAT ?= $(shell if [ "${GITHUB_ACTIONS}" == "true" ]; then echo "github"; else echo ""; fi)
 REPO_ROOT = $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 REPO_NAME = $(shell basename "$(REPO_ROOT)")
@@ -71,7 +72,7 @@ help: ## Print all Makefile targets (this message).
 				}'
 
 package-lock.json: package.json
-	@npm install --package-lock-only --no-audit --no-fund --no-save
+	@npm install --package-lock-only --no-audit --no-fund
 
 node_modules/.installed: package-lock.json
 	@npm clean-install
@@ -313,7 +314,7 @@ renovate-config-validator: node_modules/.installed ## Validate Renovate configur
 
 .PHONY: textlint
 textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textlint linter.
-	@set -euo pipefail;\
+	@set -euo pipefail; \
 		files=$$( \
 			git ls-files --deduplicate \
 				'*.md' \
