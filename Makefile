@@ -82,7 +82,7 @@ node_modules/.installed: package-lock.json
 .venv/bin/activate:
 	@python -m venv .venv
 
-.venv/.installed: requirements.txt .venv/bin/activate
+.venv/.installed: requirements-dev.txt .venv/bin/activate
 	@./.venv/bin/pip install -r $< --require-hashes
 	@touch $@
 
@@ -319,7 +319,7 @@ textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textli
 			git ls-files --deduplicate \
 				'*.md' \
 				'*.txt' \
-				':!:requirements.txt' \
+				':!:requirements*.txt' \
 				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 		); \
 		if [ "$${files}" == "" ]; then \
