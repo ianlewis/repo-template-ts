@@ -77,7 +77,7 @@ package-lock.json: package.json
 node_modules/.installed: package-lock.json
 	@npm clean-install
 	@npm audit signatures
-	@touch node_modules/.installed
+	@touch $@
 
 .venv/bin/activate:
 	@python -m venv .venv
