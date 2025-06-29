@@ -22,8 +22,10 @@
 
   // Security alerts/updates happen more frequently.
   vulnerabilityAlerts: {
+    enabled: true,
     schedule: "* 0-4 * * *",
   },
+  osvVulnerabilityAlerts: true,
 
   // Create a new issue for each config warning. By default, Renovate re-opens
   // an existing issue which can be very old and is easily missed. Opening new
