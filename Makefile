@@ -385,6 +385,7 @@ zizmor: .venv/.installed ## Runs the zizmor linter.
 		fi; \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			.venv/bin/zizmor \
+				--config .zizmor.yml \
 				--quiet \
 				--pedantic \
 				--format sarif \
