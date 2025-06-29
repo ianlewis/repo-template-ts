@@ -36,8 +36,6 @@ jobs:
           submodules: true
           persist-credentials: false
       - run: |
-          echo "${GITHUB_WORKSPACE}/autogen" >> "${GITHUB_PATH}"
-      - run: |
           git config user.name "Unknown"
           make license-headers
       - name: check diff
