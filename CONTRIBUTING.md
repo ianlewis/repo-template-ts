@@ -2,11 +2,12 @@
 
 This doc describes how to contribute to this repository.
 
-First, We'd love to accept your patches and contributions to my projects!
+First, thank you for contributing! We're happy to accept your patches and
+contributions!
 
 ## How can I help?
 
-There are many areas repositories that need help. These are managed in GitHub
+There are many areas that need help. These are managed in GitHub
 issues. Please let us know if you are willing to work on the issue and how you
 can contribute.
 
