@@ -25,17 +25,24 @@ on:
 permissions:
   contents: read # Needed to check out the repo.
 
+# NOTE: We use simple job names because these are used in branch rulesets and
+#       are matched by name. This makes the job names an identifier rather than
+#       just a human-readable label.
+
 jobs:
   # Check license headers
   ###############################
   license-headers:
+    name: license-headers
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           submodules: true
           persist-credentials: false
-      - run: |
+      - name: Generate license headers
+        run: |
           git config user.name "Unknown"
           make license-headers
       - name: check diff
@@ -53,6 +60,7 @@ jobs:
   ###############################
 
   formatting:
+    name: formatting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -77,6 +85,7 @@ jobs:
   ###############################
 
   actionlint:
+    name: actionlint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -86,6 +95,7 @@ jobs:
         run: make actionlint
 
   fixme:
+    name: fixme
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -94,6 +104,7 @@ jobs:
       - run: make fixme
 
   markdownlint:
+    name: markdownlint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -105,6 +116,7 @@ jobs:
       - run: make markdownlint
 
   renovate-config-validator:
+    name: renovate-config-validator
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -116,6 +128,7 @@ jobs:
       - run: make renovate-config-validator
 
   textlint:
+    name: textlint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -127,6 +140,7 @@ jobs:
       - run: make textlint
 
   yamllint:
+    name: yamllint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -138,6 +152,7 @@ jobs:
       - run: make yamllint
 
   zizmor:
+    name: zizmor
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -389,7 +389,7 @@ zizmor: .venv/.installed ## Runs the zizmor linter.
 				--quiet \
 				--pedantic \
 				--format sarif \
-				$${files} > zizmor.sarif.json || true; \
+				$${files} > zizmor.sarif.json; \
 		fi; \
 		.venv/bin/zizmor \
 			--config .zizmor.yml \
