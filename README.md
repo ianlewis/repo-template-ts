@@ -64,7 +64,13 @@ work on MacOS or Windows given a `bash` environment, but this is not tested.
 In general, dependencies on outside tools should be minimized in favor of
 including them as project-local dependencies.
 
-Required runtimes:
+The following language runtimes are required. It is recommended to use a tool
+that can manage multiple language runtime versions such as
+[`pyenv`](https://github.com/pyenv/pyenv),
+[`nodenv`](https://github.com/nodenv/nodenv),
+[`nvm`](https://github.com/nvm-sh/nvm), or [`asdf`](https://asdf-vm.com/). This
+repository includes `.node-version` and `.python-version` files to specify the
+language runtime versions to use for maximum compatibility with these tools.
 
 - [`Node.js`]: Node.js is required to run some linters and formatters.
 - [`Python`]: Python is required to run some linters and formatters.
@@ -235,10 +241,20 @@ The following tools should be added to the required code scanning results.
 - [ ] `CodeQL`
 - [ ] `zizmor`
 
-#### Code security
+#### Advanced Security
 
 1. [ ] **Private vulnerability reporting:**
        Enable [private vulnerability reporting] as mentioned in [`SECURITY.md`].
+2. [ ] **Dependency Graph:**
+       Enable the [dependency graph] and automatic dependency submission.
+       Renovate relies on dependency graph for its [vulnerability
+       alerts](https://docs.renovatebot.com/configuration-options/#vulnerabilityalerts)
+       feature.
+3. [ ] **Dependabot Alerts:**
+       Enable [Dependabot alerts]. Renovate relies on Dependabot alerts for its
+       [vulnerability
+       alerts](https://docs.renovatebot.com/configuration-options/#vulnerabilityalerts)
+       feature.
 
 ##### Code scanning
 
@@ -275,6 +291,8 @@ git merge --no-edit --signoff --squash --allow-unrelated-histories --log repo-te
 PRs may be accepted to this template. See [`CONTRIBUTING.md`] for contributor
 documentation.
 
+[Dependabot alerts]: https://docs.github.com/en/code-security/dependabot/dependabot-alerts/about-dependabot-alerts
+[dependency graph]: https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-the-dependency-graph
 [private vulnerability reporting]: https://docs.github.com/en/code-security/security-advisories/working-with-repository-security-advisories/configuring-private-vulnerability-reporting-for-a-repository
 [`CONTRIBUTING.md`]: ./CONTRIBUTING.md
 [`SECURITY.md`]: ./SECURITY.md
