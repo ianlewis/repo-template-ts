@@ -2,7 +2,8 @@
 
 <!-- TODO: update badge urls -->
 
-[![tests](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml/badge.svg)](https://github.com/ianlewis/repo-template/actions/workflows/pre-submit.units.yml) [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template/badge)](https://securityscorecards.dev/viewer/?uri=github.com%2Fianlewis%2Frepo-template)
+[![tests](https://github.com/ianlewis/repo-template/actions/workflows/pull_request.tests.yml/badge.svg)](https://github.com/ianlewis/repo-template/actions/workflows/pull_request.tests.yml)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template/badge)](https://securityscorecards.dev/viewer/?uri=github.com%2Fianlewis%2Frepo-template)
 
 <!-- TODO: Update README contents. -->
 
