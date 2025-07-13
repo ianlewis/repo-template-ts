@@ -2,7 +2,7 @@
 
 <!-- TODO: update badge urls -->
 
-[![tests](https://github.com/ianlewis/repo-template-ts/actions/workflows/pre-submit.units.yml/badge.svg)](https://github.com/ianlewis/repo-template-ts/actions/workflows/pre-submit.units.yml)
+[![tests](https://github.com/ianlewis/repo-template-ts/actions/workflows/pull_request.tests.yml/badge.svg)](https://github.com/ianlewis/repo-template-ts/actions/workflows/pull_request.tests.yml)
 [![Codecov](https://codecov.io/gh/ianlewis/repo-template-ts/graph/badge.svg?token=STWQS28VUG)](https://codecov.io/gh/ianlewis/repo-template-ts)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template-ts/badge)](https://securityscorecards.dev/viewer/?uri=github.com%2Fianlewis%2Frepo-template-ts)
 
