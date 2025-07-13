@@ -33,6 +33,8 @@ permissions:
 jobs:
   tests:
     uses: ./.github/workflows/workflow_call.tests.yml
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   # Check license headers
   ###############################

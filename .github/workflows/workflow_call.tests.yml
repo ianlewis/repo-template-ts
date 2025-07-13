@@ -16,6 +16,9 @@ name: TypeScript unit tests
 
 on:
   workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        required: true
 
 permissions:
   contents: read
