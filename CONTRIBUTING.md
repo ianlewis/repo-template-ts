@@ -114,10 +114,10 @@ Commit your code to your branch. For most repositories, messages should follow
 the [Conventional Commits] format.
 
 Commits should include a [Developer Certificate of Origin] (DCO). This can be
-included automatically in commits using the `--signoff` flag.
+included automatically in commits using the `-s`/`--signoff` flag.
 
 ```shell
-git commit -sm "feat: My new feature"
+git commit --signoff -m "feat: My new feature"
 ```
 
 You can now push your changes to your fork.

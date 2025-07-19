@@ -83,6 +83,8 @@ don't need to be pre-installed:
 
 - [`actionlint`]: For linting GitHub Actions workflows (installed by Aqua in
   `.aqua`).
+- [`commitlint`]: For checking commit messages (installed by local
+  `node_modules`).
 - [`jq`]: For parsing output of some linters (installed by Aqua in `.aqua`).
 - [`markdownlint`]: For linting markdown (installed in local `node_modules`).
 - [`mbrukman/autogen`]: For adding license headers (vendored in `third_party`).
@@ -125,12 +127,15 @@ Formatting
 Linting
   lint                      Run all linters.
   actionlint                Runs the actionlint linter.
-  zizmor                    Runs the zizmor linter.
+  commitlint                Run commitlint linter.
+  fixme                     Check for outstanding FIXMEs.
   markdownlint              Runs the markdownlint linter.
   renovate-config-validator Validate Renovate configuration.
   textlint                  Runs the textlint linter.
   yamllint                  Runs the yamllint linter.
+  zizmor                    Runs the zizmor linter.
 Maintenance
+  todos                     Print outstanding TODOs.
   clean                     Delete temporary files.
 ```
 
@@ -337,6 +342,7 @@ documentation.
 [`Node.js`]: https://nodejs.org/
 [`Python`]: https://www.python.org/
 [`actionlint`]: https://github.com/rhysd/actionlint
+[`commitlint`]: https://commitlint.js.org/
 [`mbrukman/autogen`]: https://github.com/mbrukman/autogen
 [`git`]: https://git-scm.com/
 [`jq`]: https://jqlang.org/
