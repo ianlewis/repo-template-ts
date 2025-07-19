@@ -113,7 +113,6 @@ license-headers: ## Update license headers.
 				'*.go' \
 				'*.h' \
 				'*.hpp' \
-				'*.ts' \
 				'*.js' \
 				'*.lua' \
 				'*.py' \
@@ -200,7 +199,7 @@ yaml-format: node_modules/.installed ## Format YAML files.
 #####################################################################
 
 .PHONY: lint
-lint: actionlint fixme markdownlint renovate-config-validator textlint yamllint zizmor ## Run all linters.
+lint: actionlint commitlint fixme markdownlint renovate-config-validator textlint yamllint zizmor ## Run all linters.
 
 .PHONY: actionlint
 actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
@@ -225,6 +224,24 @@ actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
 		else \
 			actionlint $${files}; \
 		fi
+
+.PHONY: commitlint
+commitlint: node_modules/.installed ## Run commitlint linter.
+	@set -euo pipefail;\
+		commitlint_from=$(COMMITLINT_FROM_REF); \
+		commitlint_to=$(COMMITLINT_TO_REF); \
+		if [ "$${commitlint_from}" == "" ]; then \
+			commitlint_from=$$(git remote show origin | grep 'HEAD branch' | awk '{print $$NF}'); \
+		fi; \
+		if [ "$${commitlint_to}" == "" ]; then \
+			commitlint_to=HEAD; \
+		fi; \
+		./node_modules/.bin/commitlint \
+			--config .commitlint.config.mjs \
+			--from "$${commitlint_from}" \
+			--to "$${commitlint_to}" \
+			--verbose \
+			--strict
 
 .PHONY: fixme
 fixme: $(AQUA_ROOT_DIR)/.installed ## Check for outstanding FIXMEs.
