@@ -419,7 +419,7 @@ zizmor: .venv/.installed ## Runs the zizmor linter.
 #####################################################################
 
 .PHONY: todos
-todos: $(AQUA_ROOT_DIR)/.installed ## Check for outstanding TODOs.
+todos: $(AQUA_ROOT_DIR)/.installed ## Print outstanding TODOs.
 	@set -euo pipefail;\
 		PATH="$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION):$(AQUA_ROOT_DIR)/bin:$${PATH}"; \
 		AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)"; \
