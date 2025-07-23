@@ -280,10 +280,10 @@ markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the ma
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			exit_code=0; \
 			while IFS="" read -r p && [ -n "$$p" ]; do \
-				file=$$(echo "$$p" | jq -c -r '.fileName // empty'); \
-				line=$$(echo "$$p" | jq -c -r '.lineNumber // empty'); \
+				file=$$(echo "$$p" | jq -cr '.fileName // empty'); \
+				line=$$(echo "$$p" | jq -cr '.lineNumber // empty'); \
 				endline=$${line}; \
-				message=$$(echo "$$p" | jq -c -r '.ruleNames[0] + "/" + .ruleNames[1] + " " + .ruleDescription + " [Detail: \"" + .errorDetail + "\", Context: \"" + .errorContext + "\"]"'); \
+				message=$$(echo "$$p" | jq -cr '.ruleNames[0] + "/" + .ruleNames[1] + " " + .ruleDescription + " [Detail: \"" + .errorDetail + "\", Context: \"" + .errorContext + "\"]"'); \
 				exit_code=1; \
 				echo "::error file=$${file},line=$${line},endLine=$${endline}::$${message}"; \
 			done <<< "$$(./node_modules/.bin/markdownlint --config .markdownlint.yaml --dot --json $${files} 2>&1 | jq -c '.[]')"; \
@@ -308,10 +308,10 @@ markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the ma
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			exit_code=0; \
 			while IFS="" read -r p && [ -n "$$p" ]; do \
-				file=$$(echo "$$p" | jq -c -r '.fileName // empty'); \
-				line=$$(echo "$$p" | jq -c -r '.lineNumber // empty'); \
+				file=$$(echo "$$p" | jq -cr '.fileName // empty'); \
+				line=$$(echo "$$p" | jq -cr '.lineNumber // empty'); \
 				endline=$${line}; \
-				message=$$(echo "$$p" | jq -c -r '.ruleNames[0] + "/" + .ruleNames[1] + " " + .ruleDescription + " [Detail: \"" + .errorDetail + "\", Context: \"" + .errorContext + "\"]"'); \
+				message=$$(echo "$$p" | jq -cr '.ruleNames[0] + "/" + .ruleNames[1] + " " + .ruleDescription + " [Detail: \"" + .errorDetail + "\", Context: \"" + .errorContext + "\"]"'); \
 				exit_code=1; \
 				echo "::error file=$${file},line=$${line},endLine=$${endline}::$${message}"; \
 			done <<< "$$(./node_modules/.bin/markdownlint --config .github/template.markdownlint.yaml --dot --json $${files} 2>&1 | jq -c '.[]')"; \
@@ -347,15 +347,17 @@ textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textli
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			exit_code=0; \
 			while IFS="" read -r p && [ -n "$$p" ]; do \
-				filePath=$$(echo "$$p" | jq -c -r '.filePath // empty'); \
+				filePath=$$(echo "$$p" | jq -cr '.filePath // empty'); \
 				file=$$(realpath --relative-to="." "$${filePath}"); \
 				while IFS="" read -r m && [ -n "$$m" ]; do \
-					line=$$(echo "$$m" | jq -c -r '.loc.start.line'); \
-					endline=$$(echo "$$m" | jq -c -r '.loc.end.line'); \
-					message=$$(echo "$$m" | jq -c -r '.message'); \
+					line=$$(echo "$$m" | jq -cr '.loc.start.line // empty'); \
+					endline=$$(echo "$$m" | jq -cr '.loc.end.line // empty'); \
+					col=$$(echo "$${m}" | jq -cr '.loc.start.column // empty'); \
+					endcol=$$(echo "$${m}" | jq -cr '.loc.end.column // empty'); \
+					message=$$(echo "$$m" | jq -cr '.message // empty'); \
 					exit_code=1; \
-					echo "::error file=$${file},line=$${line},endLine=$${endline}::$${message}"; \
-				done <<<"$$(echo "$$p" | jq -c -r '.messages[] // empty')"; \
+					echo "::error file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
+				done <<<"$$(echo "$$p" | jq -cr '.messages[] // empty')"; \
 			done <<< "$$(./node_modules/.bin/textlint -c .textlintrc.yaml --format json $${files} 2>&1 | jq -c '.[]')"; \
 			exit "$${exit_code}"; \
 		else \
