@@ -17,14 +17,36 @@ import tsParser from "@typescript-eslint/parser";
 import stylisticTs from "@stylistic/eslint-plugin-ts";
 import github from "eslint-plugin-github";
 
+const ignores = ["**/coverage", "**/lib", "**/linter", "**/node_modules"];
+
 export default [
   github.getFlatConfigs().browser,
   github.getFlatConfigs().recommended,
   github.getFlatConfigs().react,
   ...github.getFlatConfigs().typescript,
   {
-    files: ["**/*.{js,cjs,mjs,jsx,mjsx,ts,cts,mts,tsx,mtsx}"],
-    ignores: ["**/coverage", "**/lib", "**/linter", "**/node_modules"],
+    files: ["**/*.{js,cjs,mjs,jsx,mjsx}"],
+    ignores,
+    settings: {
+      "import/resolver": {
+        node: {},
+        // For loading TypeScript modules in JavaScript files.
+        typescript: {},
+      },
+    },
+    rules: {
+      "github/array-foreach": "error",
+      "github/async-preventdefault": "warn",
+      "github/no-then": "error",
+      "github/no-blur": "error",
+      "i18n-text/no-en": ["off"],
+      "import/no-namespace": "off",
+      "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    },
+  },
+  {
+    files: ["**/*.{ts,cts,mts,tsx,mtsx}"],
+    ignores,
     plugins: {
       "@stylistic/ts": stylisticTs,
     },
