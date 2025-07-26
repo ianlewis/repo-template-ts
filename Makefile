@@ -237,7 +237,7 @@ commitlint: node_modules/.installed ## Run commitlint linter.
 			commitlint_to=HEAD; \
 		fi; \
 		./node_modules/.bin/commitlint \
-			--config .commitlint.config.mjs \
+			--config commitlint.config.mjs \
 			--from "$${commitlint_from}" \
 			--to "$${commitlint_to}" \
 			--verbose \
