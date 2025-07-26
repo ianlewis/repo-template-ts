@@ -161,6 +161,7 @@ json-format: node_modules/.installed ## Format JSON files.
 			exit 0; \
 		fi; \
 		./node_modules/.bin/prettier \
+			--no-error-on-unmatched-pattern \
 			--write \
 			$${files}
 
@@ -177,6 +178,7 @@ md-format: node_modules/.installed ## Format Markdown files.
 		fi; \
 		# NOTE: prettier uses .editorconfig for tab-width. \
 		./node_modules/.bin/prettier \
+			--no-error-on-unmatched-pattern \
 			--write \
 			$${files}
 
@@ -192,6 +194,7 @@ yaml-format: node_modules/.installed ## Format YAML files.
 			exit 0; \
 		fi; \
 		./node_modules/.bin/prettier \
+			--no-error-on-unmatched-pattern \
 			--write \
 			$${files}
 
