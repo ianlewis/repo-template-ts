@@ -100,6 +100,22 @@ $(AQUA_ROOT_DIR)/.installed: .aqua.yaml .bin/aqua-$(AQUA_VERSION)/aqua
 		install
 	@touch $@
 
+## Build
+#####################################################################
+
+.PHONY: compile
+compile: node_modules/.installed ## Compile TypeScript.
+	@./node_modules/.bin/tsc
+
+## Testing
+#####################################################################
+
+.PHONY: unit-test
+unit-test: compile ## Runs all unit tests.
+	# NOTE: Make sure the package builds.
+	@NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 \
+		./node_modules/.bin/jest --coverage
+
 ## Tools
 #####################################################################
 
@@ -146,7 +162,25 @@ license-headers: ## Update license headers.
 #####################################################################
 
 .PHONY: format
-format: json-format md-format yaml-format ## Format all files
+format: js-format json-format md-format ts-format yaml-format ## Format all files
+
+.PHONY: js-format
+js-format: node_modules/.installed ## Format YAML files.
+	@set -euo pipefail; \
+		files=$$( \
+			git ls-files --deduplicate \
+				'*.js' \
+				'*.cjs' \
+				'*.mjs' \
+				'*.jsx' \
+				'*.mjsx' \
+		); \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
+		./node_modules/.bin/prettier \
+			--write \
+			$${files}
 
 .PHONY: json-format
 json-format: node_modules/.installed ## Format JSON files.
@@ -167,6 +201,7 @@ json-format: node_modules/.installed ## Format JSON files.
 
 .PHONY: md-format
 md-format: node_modules/.installed ## Format Markdown files.
+	@#NOTE: tab-width of 4 is recommended for Markdown files.
 	@set -euo pipefail; \
 		files=$$( \
 			git ls-files --deduplicate \
@@ -198,11 +233,29 @@ yaml-format: node_modules/.installed ## Format YAML files.
 			--write \
 			$${files}
 
+.PHONY: ts-format
+ts-format: node_modules/.installed ## Format YAML files.
+	@set -euo pipefail; \
+		files=$$( \
+			git ls-files --deduplicate \
+				'*.ts' \
+				'*.cts' \
+				'*.mts' \
+				'*.tsx' \
+				'*.mtsx' \
+		);  \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
+		./node_modules/.bin/prettier \
+			--write \
+			$${files}
+
 ## Linting
 #####################################################################
 
 .PHONY: lint
-lint: actionlint commitlint fixme markdownlint renovate-config-validator textlint yamllint zizmor ## Run all linters.
+lint: actionlint commitlint eslint fixme markdownlint renovate-config-validator textlint yamllint zizmor ## Run all linters.
 
 .PHONY: actionlint
 actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
@@ -251,6 +304,60 @@ commitlint: node_modules/.installed ## Run commitlint linter.
 			--to "$${commitlint_to}" \
 			--verbose \
 			--strict
+
+.PHONY: eslint
+eslint: node_modules/.installed ## Runs eslint.
+	@set -euo pipefail; \
+		files=$$( \
+			git ls-files --deduplicate \
+				'*.js' \
+				'*.cjs' \
+				'*.mjs' \
+				'*.jsx' \
+				'*.mjsx' \
+				'*.ts' \
+				'*.cts' \
+				'*.mts' \
+				'*.tsx' \
+				'*.mtsx' \
+				| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
+		); \
+		if [ "$${files}" == "" ]; then \
+			exit 0; \
+		fi; \
+		PATH="$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION):$(AQUA_ROOT_DIR)/bin:$${PATH}"; \
+		AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)"; \
+		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
+			exit_code=0; \
+			while IFS="" read -r p && [ -n "$${p}" ]; do \
+				file=$$(echo "$${p}" | jq -c '.filePath // empty' | tr -d '"'); \
+				while IFS="" read -r m && [ -n "$${m}" ]; do \
+					severity=$$(echo "$${m}" | jq -c '.severity // empty' | tr -d '"'); \
+					line=$$(echo "$${m}" | jq -c '.line // empty' | tr -d '"'); \
+					endline=$$(echo "$${m}" | jq -c '.endLine // empty' | tr -d '"'); \
+					col=$$(echo "$${m}" | jq -c '.column // empty' | tr -d '"'); \
+					endcol=$$(echo "$${m}" | jq -c '.endColumn // empty' | tr -d '"'); \
+					message=$$(echo "$${m}" | jq -c '.message // empty' | tr -d '"'); \
+					exit_code=1; \
+					case $${severity} in \
+					"1") \
+						echo "::warning file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
+						;; \
+					"2") \
+						echo "::error file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
+						;; \
+					esac; \
+				done <<<$$(echo "$${p}" | jq -c '.messages[]'); \
+			done <<<$$(./node_modules/.bin/eslint \
+				--max-warnings 0 \
+				--format json \
+				$${files} | jq -c '.[]'); \
+			exit "$${exit_code}"; \
+		else \
+			./node_modules/.bin/eslint \
+				--max-warnings 0 \
+				$${files}; \
+		fi
 
 .PHONY: fixme
 fixme: $(AQUA_ROOT_DIR)/.installed ## Check for outstanding FIXMEs.
@@ -452,4 +559,6 @@ clean: ## Delete temporary files.
 		$(AQUA_ROOT_DIR) \
 		.venv \
 		node_modules \
-		*.sarif.json
+		*.sarif.json \
+		lib \
+		coverage
