@@ -73,8 +73,8 @@ language runtime versions to use for maximum compatibility with these tools.
 The following tools need to be installed:
 
 - [`git`]: For repository management.
-- `awk`, `bash`, `grep`, `head`, `rm`, `sha256sum`, `uname`: Standard
-  Unix tools.
+- `awk`, `basename` `bash`, `dirname`, `grep`, `head`, `rm`, `sha256sum`,
+  `uname`: Standard Unix tools.
 - GNU `make`: For running commands.
 - `curl`, `tar`, `gzip`: For extracting archives.
 
