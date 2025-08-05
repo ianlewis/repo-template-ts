@@ -54,6 +54,9 @@ AQUA_ROOT_DIR = $(REPO_ROOT)/.aqua
 .PHONY: help
 help: ## Print all Makefile targets (this message).
 	@# bash \
+	echo "$(REPO_NAME) Makefile"; \
+	echo "Usage: make [COMMAND]"; \
+	echo ""; \
 	normal=""; \
 	cyan=""; \
 	if command -v tput >/dev/null 3>&1; then \
