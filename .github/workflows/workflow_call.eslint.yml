@@ -1,4 +1,4 @@
-# Copyright 2025 Ian Lewis
+# Copyright 2024 Ian Lewis
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,20 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-rules:
-  forbidden-uses:
-    config:
-      allow:
-        # Allow the use of official GitHub Actions
-        - actions/*
-        # Allow the use of official GitHub CodeQL Actions
-        - github/codeql-action/*
+name: eslint
 
-        # Allow the use of the todo-issue-reopener action
-        - ianlewis/todo-issue-reopener
+on:
+  workflow_call:
 
-        # Allow the use of the ossf/scorecard-action
-        - ossf/scorecard-action
+permissions:
+  contents: read
 
-        # Allow the use of the codecov/codecov-action
-        - codecov/codecov-action
+jobs:
+  eslint:
+    name: eslint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: ".node-version"
+      - run: make eslint

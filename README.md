@@ -1,15 +1,21 @@
-# `repo-template`
+# `repo-template-ts`
 
 <!-- TODO: update badge urls -->
 
-[![tests](https://github.com/ianlewis/repo-template/actions/workflows/pull_request.tests.yml/badge.svg)](https://github.com/ianlewis/repo-template/actions/workflows/pull_request.tests.yml)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template/badge)](https://securityscorecards.dev/viewer/?uri=github.com%2Fianlewis%2Frepo-template)
+[![tests](https://github.com/ianlewis/repo-template-ts/actions/workflows/pull_request.tests.yml/badge.svg)](https://github.com/ianlewis/repo-template-ts/actions/workflows/pull_request.tests.yml)
+[![Codecov](https://codecov.io/gh/ianlewis/repo-template-ts/graph/badge.svg?token=STWQS28VUG)](https://codecov.io/gh/ianlewis/repo-template-ts)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template-ts/badge)](https://securityscorecards.dev/viewer/?uri=github.com%2Fianlewis%2Frepo-template-ts)
 
 <!-- TODO: Update README contents. -->
 
+Repository template for TypeScript repositories under `github.com/ianlewis`.
+
 This repository template is maintained for use in repositories under
-`github.com/ianlewis`. However, it can be used as a general purpose repository
-starter template.
+`github.com/ianlewis`. However, it can be used as a general purpose TypeScript
+repository starter template.
+
+This repository is set up to make use of ESM modules and makes use of
+[Jest](https://jestjs.io/) for unit tests.
 
 ## Goals
 
@@ -84,6 +90,7 @@ don't need to be pre-installed:
 - [`actionlint`]: For linting GitHub Actions workflows (installed by Aqua in
   `.aqua`).
 - [`commitlint`]: For checking commit messages (installed by local
+- [`eslint`]: For linting JavaScript and TypeScript (installed in local
   `node_modules`).
 - [`jq`]: For parsing output of some linters (installed by Aqua in `.aqua`).
 - [`markdownlint`]: For linting markdown (installed in local `node_modules`).
@@ -113,21 +120,28 @@ and their descriptions grouped by function.
 
 ```shell
 $ make
-repo-template Makefile
+repo-template-ts Makefile
 Usage: make [COMMAND]
 
   help                      Print all Makefile targets (this message).
+Build
+  compile                   Compile TypeScript.
+Testing
+  unit-test                 Runs all unit tests.
 Tools
   license-headers           Update license headers.
 Formatting
   format                    Format all files
+  js-format                 Format YAML files.
   json-format               Format JSON files.
   md-format                 Format Markdown files.
   yaml-format               Format YAML files.
+  ts-format                 Format YAML files.
 Linting
   lint                      Run all linters.
   actionlint                Runs the actionlint linter.
   commitlint                Run commitlint linter.
+  eslint                    Runs eslint.
   fixme                     Check for outstanding FIXMEs.
   markdownlint              Runs the markdownlint linter.
   renovate-config-validator Validate Renovate configuration.
@@ -241,6 +255,7 @@ to achieve the highest Tier and score as possible.
     - [ ] `DCO`
     - [ ] `actionlint / actionlint`
     - [ ] `commitlint / commitlint`
+    - [ ] `eslint / eslint`
     - [ ] `formatting / formatting`
     - [ ] `license-headers / license-headers`
     - [ ] `markdownlint / markdownlint`
@@ -311,23 +326,14 @@ commit on your commit history.
 
 ```shell
 # One time step: Add the repository template as a remote.
-git remote add repo-template git@github.com:ianlewis/repo-template.git
+git remote add repo-template-ts git@github.com:ianlewis/repo-template-ts.git
 
-# Fetch the latest version of the repo-template.
-git fetch repo-template main
+# Fetch the latest version of the repo-template-ts.
+git fetch repo-template-ts main
 
 # Create a new squash merge commit.
-git merge --no-edit --signoff --squash --allow-unrelated-histories repo-template/main
+git merge --no-edit --signoff --squash --allow-unrelated-histories --log repo-template-ts/main
 ```
-
-## Language-specific templates
-
-A number of language specific templates based on this template are also available:
-
-| Language              | Repository                                                                  |
-| --------------------- | --------------------------------------------------------------------------- |
-| Go                    | [`ianlewis/repo-template-go`](https://github.com/ianlewis/repo-template-go) |
-| TypeScript/JavaScript | [`ianlewis/repo-template-ts`](https://github.com/ianlewis/repo-template-ts) |
 
 ## Contributing
 
@@ -343,6 +349,7 @@ documentation.
 [`Python`]: https://www.python.org/
 [`actionlint`]: https://github.com/rhysd/actionlint
 [`commitlint`]: https://commitlint.js.org/
+[`eslint`]: https://eslint.org/
 [`mbrukman/autogen`]: https://github.com/mbrukman/autogen
 [`git`]: https://git-scm.com/
 [`jq`]: https://jqlang.org/
