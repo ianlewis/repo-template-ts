@@ -327,6 +327,7 @@ A number of language specific templates based on this template are also availabl
 | Language              | Repository                                                                  |
 | --------------------- | --------------------------------------------------------------------------- |
 | Go                    | [`ianlewis/repo-template-go`](https://github.com/ianlewis/repo-template-go) |
+| Python                | [`ianlewis/repo-template-py`](https://github.com/ianlewis/repo-template-py) |
 | TypeScript/JavaScript | [`ianlewis/repo-template-ts`](https://github.com/ianlewis/repo-template-ts) |
 
 ## Contributing
