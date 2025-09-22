@@ -548,10 +548,8 @@ todos: $(AQUA_ROOT_DIR)/.installed ## Print outstanding TODOs.
 
 .PHONY: clean
 clean: ## Delete temporary files.
-	@# bash \
-	rm -rf \
-		.bin \
-		$(AQUA_ROOT_DIR) \
-		.venv \
-		node_modules \
-		*.sarif.json
+	@$(RM) -r .bin
+	@$(RM) -r $(AQUA_ROOT_DIR)
+	@$(RM) -r .venv
+	@$(RM) -r node_modules
+	@$(RM) *.sarif.json
