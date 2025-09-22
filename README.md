@@ -117,16 +117,20 @@ repo-template Makefile
 Usage: make [COMMAND]
 
   help                      Print all Makefile targets (this message).
-Tools
-  license-headers           Update license headers.
+Build
+  all                       Build everything.
+Testing
+  test                      Run all tests.
 Formatting
   format                    Format all files
   json-format               Format JSON files.
+  license-headers           Update license headers.
   md-format                 Format Markdown files.
   yaml-format               Format YAML files.
 Linting
   lint                      Run all linters.
   actionlint                Runs the actionlint linter.
+  checkmake                 Runs the checkmake linter.
   commitlint                Run commitlint linter.
   fixme                     Check for outstanding FIXMEs.
   markdownlint              Runs the markdownlint linter.
@@ -240,9 +244,9 @@ to achieve the highest Tier and score as possible.
     as required:
     - [ ] `DCO`
     - [ ] `actionlint / actionlint`
+    - [ ] `checkmake / checkmake`
     - [ ] `commitlint / commitlint`
     - [ ] `formatting / formatting`
-    - [ ] `license-headers / license-headers`
     - [ ] `markdownlint / markdownlint`
     - [ ] `renovate-config-validator / renovate-config-validator`
     - [ ] `textlint / textlint`

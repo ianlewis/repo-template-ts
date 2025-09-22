@@ -152,8 +152,51 @@ $(AQUA_ROOT_DIR)/.installed: .aqua.yaml .bin/aqua-$(AQUA_VERSION)/aqua
 		install; \
 	touch $@
 
-## Tools
+## Build
 #####################################################################
+
+# TODO: Add all target dependencies.
+.PHONY: all
+all: ## Build everything.
+	@# bash \
+	echo "Nothing to build."
+
+## Testing
+#####################################################################
+
+# TODO: Add test target dependencies.
+.PHONY: test
+test: ## Run all tests.
+	@# bash \
+	echo "Nothing to test."
+
+## Formatting
+#####################################################################
+
+.PHONY: format
+format: json-format license-headers md-format yaml-format ## Format all files
+
+.PHONY: json-format
+json-format: node_modules/.installed ## Format JSON files.
+	@# bash \
+	loglevel="log"; \
+	if [ -n "$(DEBUG_LOGGING)" ]; then \
+		loglevel="debug"; \
+	fi; \
+	files=$$( \
+		git ls-files --deduplicate \
+			'*.json' \
+			'*.json5' \
+			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
+	); \
+	if [ "$${files}" == "" ]; then \
+		exit 0; \
+	fi; \
+	$(REPO_ROOT)/node_modules/.bin/prettier \
+		--log-level "$${loglevel}" \
+		--no-error-on-unmatched-pattern \
+		--write \
+		$${files}
 
 .PHONY: license-headers
 license-headers: ## Update license headers.
@@ -194,33 +237,6 @@ license-headers: ## Update license headers.
 		fi; \
 	done
 
-## Formatting
-#####################################################################
-
-.PHONY: format
-format: json-format md-format yaml-format ## Format all files
-
-.PHONY: json-format
-json-format: node_modules/.installed ## Format JSON files.
-	@# bash \
-	loglevel="log"; \
-	if [ -n "$(DEBUG_LOGGING)" ]; then \
-		loglevel="debug"; \
-	fi; \
-	files=$$( \
-		git ls-files --deduplicate \
-			'*.json' \
-			'*.json5' \
-			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
-	); \
-	if [ "$${files}" == "" ]; then \
-		exit 0; \
-	fi; \
-	$(REPO_ROOT)/node_modules/.bin/prettier \
-		--log-level "$${loglevel}" \
-		--no-error-on-unmatched-pattern \
-		--write \
-		$${files}
 
 .PHONY: md-format
 md-format: node_modules/.installed ## Format Markdown files.
@@ -269,7 +285,7 @@ yaml-format: node_modules/.installed ## Format YAML files.
 #####################################################################
 
 .PHONY: lint
-lint: actionlint commitlint fixme markdownlint renovate-config-validator textlint yamllint zizmor ## Run all linters.
+lint: actionlint checkmake commitlint fixme markdownlint renovate-config-validator textlint yamllint zizmor ## Run all linters.
 
 .PHONY: actionlint
 actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
@@ -290,7 +306,33 @@ actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
 			-ignore 'SC2016:' \
 			$${files}; \
 	else \
-		actionlint $${files}; \
+		actionlint \
+			-ignore 'SC2016:' \
+			$${files}; \
+	fi
+
+.PHONY: checkmake
+checkmake: $(AQUA_ROOT_DIR)/.installed ## Runs the checkmake linter.
+	@# bash \
+	# NOTE: We need to ignore config files used in tests. \
+	files=$$( \
+		git ls-files --deduplicate \
+			'Makefile' \
+			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
+	); \
+	if [ "$${files}" == "" ]; then \
+		exit 0; \
+	fi; \
+	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
+		# TODO: Remove newline from the format string after updating checkmake. \
+		checkmake \
+			--config .checkmake.ini \
+			--format '::error file={{.FileName}},line={{.LineNumber}}::{{.Rule}}: {{.Violation}}'$$'\n' \
+			$${files}; \
+	else \
+		checkmake \
+			--config .checkmake.ini \
+			$${files}; \
 	fi
 
 .PHONY: commitlint
