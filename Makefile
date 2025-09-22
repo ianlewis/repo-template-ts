@@ -129,7 +129,7 @@ node_modules/.installed: package-lock.json
 
 .venv/.installed: requirements-dev.txt .venv/bin/activate
 	@# bash \
-	./.venv/bin/pip install -r $< --require-hashes; \
+	$(REPO_ROOT)/.venv/bin/pip install -r $< --require-hashes; \
 	touch $@
 
 .bin/aqua-$(AQUA_VERSION)/aqua:
@@ -146,7 +146,7 @@ $(AQUA_ROOT_DIR)/.installed: .aqua.yaml .bin/aqua-$(AQUA_VERSION)/aqua
 	if [ -n "$(DEBUG_LOGGING)" ]; then \
 		loglevel="debug"; \
 	fi; \
-	AQUA_ROOT_DIR="$(AQUA_ROOT_DIR)" ./.bin/aqua-$(AQUA_VERSION)/aqua \
+	$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION)/aqua \
 		--log-level "$${loglevel}" \
 		--config .aqua.yaml \
 		install; \
@@ -184,7 +184,7 @@ license-headers: ## Update license headers.
 	fi; \
 	for filename in $${files}; do \
 		if ! ( head "$${filename}" | grep -iL "Copyright" > /dev/null ); then \
-			./third_party/mbrukman/autogen/autogen.sh \
+			$(REPO_ROOT)/third_party/mbrukman/autogen/autogen.sh \
 				--in-place \
 				--no-code \
 				--no-tlc \
@@ -216,7 +216,7 @@ json-format: node_modules/.installed ## Format JSON files.
 	if [ "$${files}" == "" ]; then \
 		exit 0; \
 	fi; \
-	./node_modules/.bin/prettier \
+	$(REPO_ROOT)/node_modules/.bin/prettier \
 		--log-level "$${loglevel}" \
 		--no-error-on-unmatched-pattern \
 		--write \
@@ -238,7 +238,7 @@ md-format: node_modules/.installed ## Format Markdown files.
 		exit 0; \
 	fi; \
 	# NOTE: prettier uses .editorconfig for tab-width. \
-	./node_modules/.bin/prettier \
+	$(REPO_ROOT)/node_modules/.bin/prettier \
 		--log-level "$${loglevel}" \
 		--no-error-on-unmatched-pattern \
 		--write \
@@ -259,7 +259,7 @@ yaml-format: node_modules/.installed ## Format YAML files.
 	if [ "$${files}" == "" ]; then \
 		exit 0; \
 	fi; \
-	./node_modules/.bin/prettier \
+	$(REPO_ROOT)/node_modules/.bin/prettier \
 		--log-level "$${loglevel}" \
 		--no-error-on-unmatched-pattern \
 		--write \
@@ -310,7 +310,7 @@ commitlint: node_modules/.installed ## Run commitlint linter.
 		fi; \
 		commitlint_to="HEAD"; \
 	fi; \
-	./node_modules/.bin/commitlint \
+	$(REPO_ROOT)/node_modules/.bin/commitlint \
 		--config commitlint.config.mjs \
 		--from "$${commitlint_from}" \
 		--to "$${commitlint_to}" \
@@ -356,12 +356,12 @@ markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the ma
 			message=$$(echo "$$p" | jq -cr '.ruleNames[0] + "/" + .ruleNames[1] + " " + .ruleDescription + " [Detail: \"" + .errorDetail + "\", Context: \"" + .errorContext + "\"]"'); \
 			exit_code=1; \
 			echo "::error file=$${file},line=$${line},endLine=$${endline}::$${message}"; \
-		done <<< "$$(./node_modules/.bin/markdownlint --config .markdownlint.yaml --dot --json $${files} 2>&1 | jq -c '.[]')"; \
+		done <<< "$$($(REPO_ROOT)/node_modules/.bin/markdownlint --config .markdownlint.yaml --dot --json $${files} 2>&1 | jq -c '.[]')"; \
 		if [ "$${exit_code}" != "0" ]; then \
 			exit "$${exit_code}"; \
 		fi; \
 	else \
-		./node_modules/.bin/markdownlint \
+		$(REPO_ROOT)/node_modules/.bin/markdownlint \
 			--config .markdownlint.yaml \
 			--dot \
 			$${files}; \
@@ -384,12 +384,12 @@ markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the ma
 			message=$$(echo "$$p" | jq -cr '.ruleNames[0] + "/" + .ruleNames[1] + " " + .ruleDescription + " [Detail: \"" + .errorDetail + "\", Context: \"" + .errorContext + "\"]"'); \
 			exit_code=1; \
 			echo "::error file=$${file},line=$${line},endLine=$${endline}::$${message}"; \
-		done <<< "$$(./node_modules/.bin/markdownlint --config .github/template.markdownlint.yaml --dot --json $${files} 2>&1 | jq -c '.[]')"; \
+		done <<< "$$($(REPO_ROOT)/node_modules/.bin/markdownlint --config .github/template.markdownlint.yaml --dot --json $${files} 2>&1 | jq -c '.[]')"; \
 		if [ "$${exit_code}" != "0" ]; then \
 			exit "$${exit_code}"; \
 		fi; \
 	else \
-		./node_modules/.bin/markdownlint \
+		$(REPO_ROOT)/node_modules/.bin/markdownlint \
 			--config .github/template.markdownlint.yaml \
 			--dot \
 			$${files}; \
@@ -398,7 +398,8 @@ markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the ma
 .PHONY: renovate-config-validator
 renovate-config-validator: node_modules/.installed ## Validate Renovate configuration.
 	@# bash \
-	./node_modules/.bin/renovate-config-validator --strict
+	$(REPO_ROOT)/node_modules/.bin/renovate-config-validator \
+		--strict
 
 .PHONY: textlint
 textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textlint linter.
@@ -427,10 +428,10 @@ textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textli
 				exit_code=1; \
 				echo "::error file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
 			done <<<"$$(echo "$$p" | jq -cr '.messages[] // empty')"; \
-		done <<< "$$(./node_modules/.bin/textlint -c .textlintrc.yaml --format json $${files} 2>&1 | jq -c '.[]')"; \
+		done <<< "$$($(REPO_ROOT)/node_modules/.bin/textlint -c .textlintrc.yaml --format json $${files} 2>&1 | jq -c '.[]')"; \
 		exit "$${exit_code}"; \
 	else \
-		./node_modules/.bin/textlint \
+		$(REPO_ROOT)/node_modules/.bin/textlint \
 			--config .textlintrc.yaml \
 			$${files}; \
 	fi
