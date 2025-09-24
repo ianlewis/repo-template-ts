@@ -83,6 +83,7 @@ don't need to be pre-installed:
 
 - [`actionlint`]: For linting GitHub Actions workflows (installed by Aqua in
   `.aqua`).
+- [`checkmake`]: For linting `Makefile` (installed by Aqua in `.aqua`).
 - [`commitlint`]: For checking commit messages (installed by local
   `node_modules`).
 - [`jq`]: For parsing output of some linters (installed by Aqua in `.aqua`).
@@ -347,6 +348,7 @@ documentation.
 [`Node.js`]: https://nodejs.org/
 [`Python`]: https://www.python.org/
 [`actionlint`]: https://github.com/rhysd/actionlint
+[`checkmake`]: https://github.com/checkmake/checkmake
 [`commitlint`]: https://commitlint.js.org/
 [`mbrukman/autogen`]: https://github.com/mbrukman/autogen
 [`git`]: https://git-scm.com/
