@@ -341,7 +341,14 @@ commitlint: node_modules/.installed ## Run commitlint linter.
 	commitlint_from=$(COMMITLINT_FROM_REF); \
 	commitlint_to=$(COMMITLINT_TO_REF); \
 	if [ "$${commitlint_from}" == "" ]; then \
-		commitlint_from=$$(git remote show origin | grep 'HEAD branch' | awk '{print $$NF}'); \
+		# Try to get the default branch without hitting the remote server \
+		if git symbolic-ref --short refs/remotes/origin/HEAD >/dev/null 2>&1; then \
+			commitlint_from=$$(git symbolic-ref --short refs/remotes/origin/HEAD); \
+		elif git show-ref refs/remotes/origin/master >/dev/null 2>&1; then \
+			commitlint_from="origin/master"; \
+		else \
+			commitlint_from="origin/main"; \
+		fi; \
 	fi; \
 	if [ "$${commitlint_to}" == "" ]; then \
 		# if head is on the commitlint_from branch, then we will lint the \
