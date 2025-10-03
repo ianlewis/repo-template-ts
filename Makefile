@@ -84,7 +84,7 @@ help: ## Print all Makefile targets (this message).
 
 package-lock.json: package.json $(AQUA_ROOT_DIR)/.installed
 	@# bash \
-	loglevel="silent"; \
+	loglevel="notice"; \
 	if [ -n "$(DEBUG_LOGGING)" ]; then \
 		loglevel="verbose"; \
 	fi; \
