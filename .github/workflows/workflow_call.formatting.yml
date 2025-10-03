@@ -40,7 +40,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "Unknown"
-          npm --version
           make format
 
       - name: check diff
