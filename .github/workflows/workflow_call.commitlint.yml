@@ -45,6 +45,11 @@ jobs:
 
       # NOTE: actions/checkout does not set up local branches
       - run: |
+          # Fetch the HEAD ref. This is necessary to get the correct default
+          # branch.
+          git remote set-head origin --auto
+
+          # Create local branches for all remote branches except pull requests.
           set -euo pipefail
           current_branch=$(git rev-parse --abbrev-ref HEAD)
           for remote_branch in $(git branch -r | grep -v "\->" | grep -v -e "^\s*pull/"); do
