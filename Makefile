@@ -157,18 +157,17 @@ $(AQUA_ROOT_DIR)/.installed: .aqua.yaml .bin/aqua-$(AQUA_VERSION)/aqua
 
 # TODO: Add all target dependencies.
 .PHONY: all
-all: ## Build everything.
+all: test ## Build everything.
 	@# bash \
 	echo "Nothing to build."
+	exit 1
 
 ## Testing
 #####################################################################
 
 # TODO: Add test target dependencies.
 .PHONY: test
-test: ## Run all tests.
-	@# bash \
-	echo "Nothing to test."
+test: lint ## Run all tests.
 
 ## Formatting
 #####################################################################
@@ -285,7 +284,7 @@ yaml-format: node_modules/.installed ## Format YAML files.
 #####################################################################
 
 .PHONY: lint
-lint: actionlint checkmake commitlint fixme markdownlint renovate-config-validator textlint yamllint zizmor ## Run all linters.
+lint: actionlint checkmake commitlint fixme format-check markdownlint renovate-config-validator textlint yamllint zizmor ## Run all linters.
 
 .PHONY: actionlint
 actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
@@ -379,6 +378,23 @@ fixme: $(AQUA_ROOT_DIR)/.installed ## Check for outstanding FIXMEs.
 	todos \
 		--output "$${output}" \
 		--todo-types="FIXME,Fixme,fixme,BUG,Bug,bug,XXX,COMBAK"
+
+.PHONY: format-check
+format-check: ## Check that files are properly formatted.
+	@# bash \
+	if [ -n "$$(git diff)" ]; then \
+		>&2 echo "The working directory is dirty. Please commit, stage, or stash changes and try again."; \
+		exit 1; \
+	fi; \
+	make format; \
+	exit_code=0; \
+	if [ -n "$$(git diff)" ]; then \
+		>&2 echo "Some files need to be formatted. Please run 'make format' and try again."; \
+		git --no-pager diff; \
+		exit_code=1; \
+	fi; \
+	git restore .; \
+	exit "$${exit_code}"
 
 .PHONY: markdownlint
 markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the markdownlint linter.

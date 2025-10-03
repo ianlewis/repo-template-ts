@@ -31,10 +31,10 @@ permissions:
 #       just a human-readable label.
 
 jobs:
-  # formatting
+  # format-check
   ###############################
-  formatting:
-    uses: ./.github/workflows/workflow_call.formatting.yml
+  format-check:
+    uses: ./.github/workflows/workflow_call.format-check.yml
 
   # linters
   ###############################
