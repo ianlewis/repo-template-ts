@@ -247,7 +247,7 @@ to achieve the highest Tier and score as possible.
     - [ ] `actionlint / actionlint`
     - [ ] `checkmake / checkmake`
     - [ ] `commitlint / commitlint`
-    - [ ] `formatting / formatting`
+    - [ ] `format-check / format-check`
     - [ ] `markdownlint / markdownlint`
     - [ ] `renovate-config-validator / renovate-config-validator`
     - [ ] `textlint / textlint`
