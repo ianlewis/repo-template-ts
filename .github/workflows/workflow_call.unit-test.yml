@@ -12,17 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: formatting
+name: TypeScript unit tests
 
 on:
   workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        required: true
 
 permissions:
   contents: read
 
 jobs:
-  formatting:
-    name: formatting
+  tests:
+    name: unit test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -31,18 +34,10 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version-file: ".node-version"
-      # TODO(#288): Use make format-check target.
-      - name: format
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make format
-      - name: check diff
-        run: |
-          set -euo pipefail
-          if [ "$(GIT_PAGER="cat" git diff --ignore-space-at-eol | wc -l)" -gt "0" ]; then
-              echo "Detected formatting changes.  See status below:"
-              echo "::group::git diff"
-              GIT_PAGER="cat" git diff
-              echo "::endgroup::"
-              exit 1
-          fi
+      - name: unit test
+        run: make unit-test
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@18283e04ce6e62d37312384ff67231eb8fd56d24 # v5.4.3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true

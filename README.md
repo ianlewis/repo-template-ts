@@ -89,6 +89,7 @@ don't need to be pre-installed:
 
 - [`actionlint`]: For linting GitHub Actions workflows (installed by Aqua in
   `.aqua`).
+- [`checkmake`]: For linting `Makefile` (installed by Aqua in `.aqua`).
 - [`commitlint`]: For checking commit messages (installed by local
 - [`eslint`]: For linting JavaScript and TypeScript (installed in local
   `node_modules`).
@@ -125,11 +126,12 @@ Usage: make [COMMAND]
 
   help                      Print all Makefile targets (this message).
 Build
-  compile                   Compile TypeScript.
+  all                       Build everything.
+  build                     Build the project.
+  pack                      Create a package tarball.
 Testing
+  test                      Run all tests.
   unit-test                 Runs all unit tests.
-Tools
-  license-headers           Update license headers.
 Formatting
   format                    Format all files
   js-format                 Format YAML files.
@@ -140,9 +142,11 @@ Formatting
 Linting
   lint                      Run all linters.
   actionlint                Runs the actionlint linter.
+  checkmake                 Runs the checkmake linter.
   commitlint                Run commitlint linter.
   eslint                    Runs eslint.
   fixme                     Check for outstanding FIXMEs.
+  format-check              Check that files are properly formatted.
   markdownlint              Runs the markdownlint linter.
   renovate-config-validator Validate Renovate configuration.
   textlint                  Runs the textlint linter.
@@ -254,14 +258,15 @@ to achieve the highest Tier and score as possible.
     as required:
     - [ ] `DCO`
     - [ ] `actionlint / actionlint`
+    - [ ] `checkmake / checkmake`
     - [ ] `commitlint / commitlint`
+    - [ ] `format-check / format-check`
     - [ ] `eslint / eslint`
-    - [ ] `formatting / formatting`
-    - [ ] `license-headers / license-headers`
     - [ ] `markdownlint / markdownlint`
     - [ ] `renovate-config-validator / renovate-config-validator`
     - [ ] `textlint / textlint`
     - [ ] `fixme / fixme`
+    - [ ] `unit-test / unit-test`
     - [ ] `yamllint / yamllint`
     - [ ] `zizmor / zizmor`
 
@@ -348,6 +353,7 @@ documentation.
 [`Node.js`]: https://nodejs.org/
 [`Python`]: https://www.python.org/
 [`actionlint`]: https://github.com/rhysd/actionlint
+[`checkmake`]: https://github.com/checkmake/checkmake
 [`commitlint`]: https://commitlint.js.org/
 [`eslint`]: https://eslint.org/
 [`mbrukman/autogen`]: https://github.com/mbrukman/autogen
