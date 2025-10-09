@@ -155,25 +155,60 @@ $(AQUA_ROOT_DIR)/.installed: .aqua.yaml .bin/aqua-$(AQUA_VERSION)/aqua
 ## Build
 #####################################################################
 
-# TODO: Add all target dependencies.
 .PHONY: all
-all: test ## Build everything.
-	@# bash \
-	echo "Nothing to build."
-	exit 1
+all: test pack ## Build everything.
+
+.PHONY: build
+build: node_modules/.installed ## Build the project.
+	@$(REPO_ROOT)/node_modules/.bin/tsc
+
+.PHONY: pack
+pack: node_modules/.installed build ## Create a package tarball.
+	@npm pack
 
 ## Testing
 #####################################################################
 
-# TODO: Add test target dependencies.
 .PHONY: test
-test: lint ## Run all tests.
+test: lint unit-test ## Run all tests.
+
+.PHONY: unit-test
+unit-test: build ## Runs all unit tests.
+	@# bash \
+	# NOTE: Make sure the package builds. \
+	NODE_OPTIONS=--experimental-vm-modules \
+	NODE_NO_WARNINGS=1 \
+		$(REPO_ROOT)/node_modules/.bin/jest --coverage
 
 ## Formatting
 #####################################################################
 
 .PHONY: format
-format: json-format license-headers md-format yaml-format ## Format all files
+format: js-format json-format md-format ts-format yaml-format ## Format all files
+
+.PHONY: js-format
+js-format: node_modules/.installed ## Format YAML files.
+	@# bash \
+	loglevel="log"; \
+	if [ -n "$(DEBUG_LOGGING)" ]; then \
+		loglevel="debug"; \
+	fi; \
+	files=$$( \
+		git ls-files --deduplicate \
+			'*.js' \
+			'*.cjs' \
+			'*.mjs' \
+			'*.jsx' \
+			'*.mjsx' \
+	); \
+	if [ "$${files}" == "" ]; then \
+		exit 0; \
+	fi; \
+	$(REPO_ROOT)/node_modules/.bin/prettier \
+		--log-level "$${loglevel}" \
+		--no-error-on-unmatched-pattern \
+		--write \
+		$${files}
 
 .PHONY: json-format
 json-format: node_modules/.installed ## Format JSON files.
@@ -196,46 +231,6 @@ json-format: node_modules/.installed ## Format JSON files.
 		--no-error-on-unmatched-pattern \
 		--write \
 		$${files}
-
-.PHONY: license-headers
-license-headers: ## Update license headers.
-	@# bash \
-	files=$$( \
-		git ls-files --deduplicate \
-			'*.c' \
-			'*.cpp' \
-			'*.go' \
-			'*.h' \
-			'*.hpp' \
-			'*.js' \
-			'*.lua' \
-			'*.py' \
-			'*.rb' \
-			'*.rs' \
-			'*.toml' \
-			'*.yaml' \
-			'*.yml' \
-			'Makefile' \
-			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
-	); \
-	name=$$(git config user.name); \
-	if [ "$${name}" == "" ]; then \
-		>&2 echo "git user.name is required."; \
-		>&2 echo "Set it up using:"; \
-		>&2 echo "git config user.name \"John Doe\""; \
-	fi; \
-	for filename in $${files}; do \
-		if ! ( head "$${filename}" | grep -iL "Copyright" > /dev/null ); then \
-			$(REPO_ROOT)/third_party/mbrukman/autogen/autogen.sh \
-				--in-place \
-				--no-code \
-				--no-tlc \
-				--copyright "$${name}" \
-				--license apache \
-				"$${filename}"; \
-		fi; \
-	done
-
 
 .PHONY: md-format
 md-format: node_modules/.installed ## Format Markdown files.
@@ -280,11 +275,35 @@ yaml-format: node_modules/.installed ## Format YAML files.
 		--write \
 		$${files}
 
+.PHONY: ts-format
+ts-format: node_modules/.installed ## Format YAML files.
+	@# bash \
+	loglevel="log"; \
+	if [ -n "$(DEBUG_LOGGING)" ]; then \
+		loglevel="debug"; \
+	fi; \
+	files=$$( \
+		git ls-files --deduplicate \
+			'*.ts' \
+			'*.cts' \
+			'*.mts' \
+			'*.tsx' \
+			'*.mtsx' \
+	);  \
+	if [ "$${files}" == "" ]; then \
+		exit 0; \
+	fi; \
+	$(REPO_ROOT)/node_modules/.bin/prettier \
+		--log-level "$${loglevel}" \
+		--no-error-on-unmatched-pattern \
+		--write \
+		$${files}
+
 ## Linting
 #####################################################################
 
 .PHONY: lint
-lint: actionlint checkmake commitlint fixme format-check markdownlint renovate-config-validator textlint yamllint zizmor ## Run all linters.
+lint: actionlint checkmake commitlint eslint fixme format-check markdownlint renovate-config-validator textlint yamllint zizmor ## Run all linters.
 
 .PHONY: actionlint
 actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
@@ -364,6 +383,64 @@ commitlint: node_modules/.installed ## Run commitlint linter.
 		--to "$${commitlint_to}" \
 		--verbose \
 		--strict
+
+.PHONY: eslint
+eslint: node_modules/.installed ## Runs eslint.
+	@# bash \
+	extraargs=""; \
+	if [ -n "$(DEBUG_LOGGING)" ]; then \
+		extraargs="--debug"; \
+	fi; \
+	files=$$( \
+		git ls-files --deduplicate \
+			'*.js' \
+			'*.cjs' \
+			'*.mjs' \
+			'*.jsx' \
+			'*.mjsx' \
+			'*.ts' \
+			'*.cts' \
+			'*.mts' \
+			'*.tsx' \
+			'*.mtsx' \
+			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
+	); \
+	if [ "$${files}" == "" ]; then \
+		exit 0; \
+	fi; \
+	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
+		exit_code=0; \
+		while IFS="" read -r p && [ -n "$${p}" ]; do \
+			file=$$(echo "$${p}" | jq -c '.filePath // empty' | tr -d '"'); \
+			while IFS="" read -r m && [ -n "$${m}" ]; do \
+				severity=$$(echo "$${m}" | jq -c '.severity // empty' | tr -d '"'); \
+				line=$$(echo "$${m}" | jq -c '.line // empty' | tr -d '"'); \
+				endline=$$(echo "$${m}" | jq -c '.endLine // empty' | tr -d '"'); \
+				col=$$(echo "$${m}" | jq -c '.column // empty' | tr -d '"'); \
+				endcol=$$(echo "$${m}" | jq -c '.endColumn // empty' | tr -d '"'); \
+				message=$$(echo "$${m}" | jq -c '.message // empty' | tr -d '"'); \
+				exit_code=1; \
+				case $${severity} in \
+				"1") \
+					echo "::warning file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
+					;; \
+				"2") \
+					echo "::error file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
+					;; \
+				esac; \
+			done <<<$$(echo "$${p}" | jq -c '.messages[]'); \
+		done <<<$$($(REPO_ROOT)/node_modules/.bin/eslint \
+			--max-warnings 0 \
+			--format json \
+			$${extraargs} \
+			$${files} | jq -c '.[]'); \
+		exit "$${exit_code}"; \
+	else \
+		$(REPO_ROOT)/node_modules/.bin/eslint \
+			--max-warnings 0 \
+			$${extraargs} \
+			$${files}; \
+	fi
 
 .PHONY: fixme
 fixme: $(AQUA_ROOT_DIR)/.installed ## Check for outstanding FIXMEs.
@@ -517,7 +594,7 @@ yamllint: .venv/.installed ## Runs the yamllint linter.
 	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 		format="github"; \
 	fi; \
-	.venv/bin/yamllint \
+	$(REPO_ROOT)/.venv/bin/yamllint \
 		--strict \
 		--config-file .yamllint.yaml \
 		--format "$${format}" \
@@ -538,14 +615,14 @@ zizmor: .venv/.installed ## Runs the zizmor linter.
 		exit 0; \
 	fi; \
 	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
-		.venv/bin/zizmor \
+		$(REPO_ROOT)/.venv/bin/zizmor \
 			--config .zizmor.yml \
 			--quiet \
 			--pedantic \
 			--format sarif \
 			$${files} > zizmor.sarif.json; \
 	fi; \
-	.venv/bin/zizmor \
+	$(REPO_ROOT)/.venv/bin/zizmor \
 		--config .zizmor.yml \
 		--quiet \
 		--pedantic \
@@ -576,3 +653,5 @@ clean: ## Delete temporary files.
 	@$(RM) -r .venv
 	@$(RM) -r node_modules
 	@$(RM) *.sarif.json
+	@$(RM) -r lib
+	@$(RM) -r coverage
