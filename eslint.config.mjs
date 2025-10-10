@@ -14,7 +14,7 @@
 
 import globals from "globals";
 import tsParser from "@typescript-eslint/parser";
-import stylisticTs from "@stylistic/eslint-plugin-ts";
+import stylistic from "@stylistic/eslint-plugin";
 import github from "eslint-plugin-github";
 
 const ignores = ["**/coverage", "**/lib", "**/linter", "**/node_modules"];
@@ -48,7 +48,7 @@ export default [
     files: ["**/*.{ts,cts,mts,tsx,mtsx}"],
     ignores,
     plugins: {
-      "@stylistic/ts": stylisticTs,
+      "@stylistic": stylistic,
     },
     settings: {
       "import/resolver": {
@@ -72,7 +72,6 @@ export default [
 
       parserOptions: {
         project: ["tsconfig.eslint.json"],
-        tsconfigRootDir: ".",
       },
     },
     rules: {
@@ -83,7 +82,7 @@ export default [
       "i18n-text/no-en": ["off"],
       "import/no-namespace": "off",
       "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
-      "@stylistic/ts/indent": ["error", 2],
+      "@stylistic/indent": ["error", 2],
       "@typescript-eslint/no-unused-vars": [
         "error",
         { argsIgnorePattern: "^_" },
