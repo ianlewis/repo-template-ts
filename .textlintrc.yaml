@@ -21,7 +21,11 @@ rules:
   spelling:
     language: "en"
     skipPatterns:
-      - "/\\bCHANGELOG\\b/g"
+      # Terminology
+      - "/\\bCodecov\\b/" # Code coverage service
+      - "/\\bESM\\b/" # ECMAScript Modules
+
+      - "/\\b(CHANGELOG|Changelog)\\b/g"
       - "/\\bCODEOWNER\\b/g"
       - "/\\bCLA\\b/g"
       - "/\\bCLI\\b/g"
@@ -30,7 +34,6 @@ rules:
       - "/\\bPRs?\\b/g"
       - "/\\bUI\\b/g"
       - "/\\bYAML\\b/g"
-      - "/\\bChangelog\\b/g"
       - "/\\bCodeQL\\b/g"
       - "/\\bDependabot\\b/g"
       - "/\\bJavaScript\\b/g"
