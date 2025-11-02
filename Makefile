@@ -15,7 +15,7 @@
 # Set the initial shell so we can determine extra options.
 SHELL := /usr/bin/env bash -ueo pipefail
 DEBUG_LOGGING ?= $(shell if [[ "${GITHUB_ACTIONS}" == "true" ]] && [[ -n "${RUNNER_DEBUG}" || "${ACTIONS_RUNNER_DEBUG}" == "true" || "${ACTIONS_STEP_DEBUG}" == "true" ]]; then echo "true"; else echo ""; fi)
-BASH_OPTIONS ?= $(shell if [ "$(DEBUG_LOGGING)" == "true" ]; then echo "-x"; else echo ""; fi)
+BASH_OPTIONS := $(shell if [ "$(DEBUG_LOGGING)" == "true" ]; then echo "-x"; else echo ""; fi)
 
 # Add extra options for debugging.
 SHELL := /usr/bin/env bash -ueo pipefail $(BASH_OPTIONS)
@@ -23,23 +23,23 @@ SHELL := /usr/bin/env bash -ueo pipefail $(BASH_OPTIONS)
 uname_s := $(shell uname -s)
 uname_m := $(shell uname -m)
 arch.x86_64 := amd64
-arch.arm64 = arm64
-arch = $(arch.$(uname_m))
+arch.arm64 := arm64
+arch := $(arch.$(uname_m))
 kernel.Linux := linux
 kernel.Darwin := darwin
-kernel = $(kernel.$(uname_s))
+kernel := $(kernel.$(uname_s))
 
 OUTPUT_FORMAT ?= $(shell if [ "${GITHUB_ACTIONS}" == "true" ]; then echo "github"; else echo ""; fi)
-REPO_ROOT = $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-REPO_NAME = $(shell basename "$(REPO_ROOT)")
+REPO_ROOT := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+REPO_NAME := $(shell basename "$(REPO_ROOT)")
 
 # renovate: datasource=github-releases depName=aquaproj/aqua versioning=loose
 AQUA_VERSION ?= v2.55.0
-AQUA_REPO ?= github.com/aquaproj/aqua
+AQUA_REPO := github.com/aquaproj/aqua
 AQUA_CHECKSUM.Linux.x86_64 = cb7780962ca651c4e025a027b7bfc82c010af25c5c150fe89ad72f4058d46540
 AQUA_CHECKSUM.Darwin.arm64 = 4797caf2d0b60d6ff3eac8c27281d1f23b1dfada4969fd6254f9951dfd83f9cf
 AQUA_CHECKSUM ?= $(AQUA_CHECKSUM.$(uname_s).$(uname_m))
-AQUA_URL = https://$(AQUA_REPO)/releases/download/$(AQUA_VERSION)/aqua_$(kernel)_$(arch).tar.gz
+AQUA_URL := https://$(AQUA_REPO)/releases/download/$(AQUA_VERSION)/aqua_$(kernel)_$(arch).tar.gz
 export AQUA_ROOT_DIR = $(REPO_ROOT)/.aqua
 
 # Ensure that aqua and aqua installed tools are in the PATH.
