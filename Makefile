@@ -414,59 +414,12 @@ markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the ma
 	files=$$( \
 		git ls-files --deduplicate \
 			'*.md' \
-			':!:.github/pull_request_template.md' \
-			':!:.github/ISSUE_TEMPLATE/*.md' \
 			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 	); \
 	if [ "$${files}" == "" ]; then \
 		exit 0; \
 	fi; \
-	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
-		exit_code=0; \
-		while IFS="" read -r p && [ -n "$$p" ]; do \
-			file=$$(echo "$$p" | jq -cr '.fileName // empty'); \
-			line=$$(echo "$$p" | jq -cr '.lineNumber // empty'); \
-			endline=$${line}; \
-			message=$$(echo "$$p" | jq -cr '.ruleNames[0] + "/" + .ruleNames[1] + " " + .ruleDescription + " [Detail: \"" + .errorDetail + "\", Context: \"" + .errorContext + "\"]"'); \
-			exit_code=1; \
-			echo "::error file=$${file},line=$${line},endLine=$${endline}::$${message}"; \
-		done <<< "$$($(REPO_ROOT)/node_modules/.bin/markdownlint --dot --json $${files} 2>&1 | jq -c '.[]')"; \
-		if [ "$${exit_code}" != "0" ]; then \
-			exit "$${exit_code}"; \
-		fi; \
-	else \
-		$(REPO_ROOT)/node_modules/.bin/markdownlint \
-			--dot \
-			$${files}; \
-	fi; \
-	files=$$( \
-		git ls-files --deduplicate \
-			'.github/pull_request_template.md' \
-			'.github/ISSUE_TEMPLATE/*.md' \
-			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
-	); \
-	if [ "$${files}" == "" ]; then \
-		exit 0; \
-	fi; \
-	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
-		exit_code=0; \
-		while IFS="" read -r p && [ -n "$$p" ]; do \
-			file=$$(echo "$$p" | jq -cr '.fileName // empty'); \
-			line=$$(echo "$$p" | jq -cr '.lineNumber // empty'); \
-			endline=$${line}; \
-			message=$$(echo "$$p" | jq -cr '.ruleNames[0] + "/" + .ruleNames[1] + " " + .ruleDescription + " [Detail: \"" + .errorDetail + "\", Context: \"" + .errorContext + "\"]"'); \
-			exit_code=1; \
-			echo "::error file=$${file},line=$${line},endLine=$${endline}::$${message}"; \
-		done <<< "$$($(REPO_ROOT)/node_modules/.bin/markdownlint --config .github/template.markdownlint.yaml --dot --json $${files} 2>&1 | jq -c '.[]')"; \
-		if [ "$${exit_code}" != "0" ]; then \
-			exit "$${exit_code}"; \
-		fi; \
-	else \
-		$(REPO_ROOT)/node_modules/.bin/markdownlint \
-			--config .github/template.markdownlint.yaml \
-			--dot \
-			$${files}; \
-	fi
+	$(REPO_ROOT)/node_modules/.bin/markdownlint-cli2 $${files}
 
 .PHONY: renovate-config-validator
 renovate-config-validator: node_modules/.installed ## Validate Renovate configuration.
