@@ -156,7 +156,6 @@ $(AQUA_ROOT_DIR)/.installed: .aqua.yaml .bin/aqua-$(AQUA_VERSION)/aqua
 	fi; \
 	$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION)/aqua \
 		--log-level "$${loglevel}" \
-		--config .aqua.yaml \
 		install; \
 	touch $@
 
@@ -333,13 +332,10 @@ checkmake: $(AQUA_ROOT_DIR)/.installed ## Runs the checkmake linter.
 	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 		# TODO: Remove newline from the format string after updating checkmake. \
 		checkmake \
-			--config .checkmake.ini \
 			--format '::error file={{.FileName}},line={{.LineNumber}}::{{.Rule}}: {{.Violation}}'$$'\n' \
 			$${files}; \
 	else \
-		checkmake \
-			--config .checkmake.ini \
-			$${files}; \
+		checkmake $${files}; \
 	fi
 
 .PHONY: commitlint
@@ -367,7 +363,6 @@ commitlint: node_modules/.installed ## Run commitlint linter.
 		commitlint_to="HEAD"; \
 	fi; \
 	$(REPO_ROOT)/node_modules/.bin/commitlint \
-		--config commitlint.config.mjs \
 		--from "$${commitlint_from}" \
 		--to "$${commitlint_to}" \
 		--verbose \
@@ -435,13 +430,12 @@ markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the ma
 			message=$$(echo "$$p" | jq -cr '.ruleNames[0] + "/" + .ruleNames[1] + " " + .ruleDescription + " [Detail: \"" + .errorDetail + "\", Context: \"" + .errorContext + "\"]"'); \
 			exit_code=1; \
 			echo "::error file=$${file},line=$${line},endLine=$${endline}::$${message}"; \
-		done <<< "$$($(REPO_ROOT)/node_modules/.bin/markdownlint --config .markdownlint.yaml --dot --json $${files} 2>&1 | jq -c '.[]')"; \
+		done <<< "$$($(REPO_ROOT)/node_modules/.bin/markdownlint --dot --json $${files} 2>&1 | jq -c '.[]')"; \
 		if [ "$${exit_code}" != "0" ]; then \
 			exit "$${exit_code}"; \
 		fi; \
 	else \
 		$(REPO_ROOT)/node_modules/.bin/markdownlint \
-			--config .markdownlint.yaml \
 			--dot \
 			$${files}; \
 	fi; \
@@ -511,7 +505,6 @@ textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textli
 		exit "$${exit_code}"; \
 	else \
 		$(REPO_ROOT)/node_modules/.bin/textlint \
-			--config .textlintrc.yaml \
 			$${files}; \
 	fi
 
@@ -533,7 +526,6 @@ yamllint: .venv/.installed ## Runs the yamllint linter.
 	fi; \
 	$(REPO_ROOT)/.venv/bin/yamllint \
 		--strict \
-		--config-file .yamllint.yaml \
 		--format "$${format}" \
 		$${files}
 
@@ -553,14 +545,12 @@ zizmor: .venv/.installed ## Runs the zizmor linter.
 	fi; \
 	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 		$(REPO_ROOT)/.venv/bin/zizmor \
-			--config .zizmor.yml \
 			--quiet \
 			--pedantic \
 			--format sarif \
 			$${files} > zizmor.sarif.json; \
 	fi; \
 	$(REPO_ROOT)/.venv/bin/zizmor \
-		--config .zizmor.yml \
 		--quiet \
 		--pedantic \
 		--format plain \
