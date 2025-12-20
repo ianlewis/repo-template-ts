@@ -21,6 +21,10 @@ rules:
   spelling:
     language: "en"
     skipPatterns:
+      # Terminology
+      - "/\\bCodecov\\b/" # Code coverage service
+      - "/\\bESM\\b/" # ECMAScript Modules
+
       - "/\\bAMD64\\b/g"
       - "/\\bARM64\\b/g"
       - "/\\b(CHANGELOG|Changelog)\\b/g"
