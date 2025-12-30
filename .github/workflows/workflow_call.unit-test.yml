@@ -12,32 +12,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: renovate-config-validator
+name: TypeScript unit tests
 
 on:
   workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        required: true
 
 permissions:
   contents: read
 
 concurrency:
-  group: renovate-config-validator-${{ github.event.pull_request.number || github.ref }}
+  group: unit-test-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  renovate-config-validator:
-    name: renovate-config-validator
+  tests:
+    name: unit test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
+      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version-file: ".node-version"
 
-      - name: renovate-config-validator
+      - name: unit test
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make renovate-config-validator
+        run: make unit-test
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
