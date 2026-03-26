@@ -26,6 +26,6 @@
     "ts-jest-resolver": "2.0.1",
     "typescript": "5.9.3",
     "encoding": "0.1.13",
-    "picomatch": "4.0.3"
+    "picomatch": "4.0.4"
   }
 }
