@@ -92,6 +92,17 @@ help: ## Print all Makefile targets (this message).
 				} \
 			}'
 
+.aqua-checksum.json: .bin/aqua-$(AQUA_VERSION)/aqua
+	@# bash \
+	loglevel="info"; \
+	if [ -n "$(DEBUG_LOGGING)" ]; then \
+		loglevel="debug"; \
+	fi; \
+	$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION)/aqua \
+		--config "$(REPO_ROOT)/.aqua.yaml" \
+		--log-level "$${loglevel}" \
+		update-checksum
+
 package-lock.json: package.json $(AQUA_ROOT_DIR)/.installed
 	@# bash \
 	loglevel="notice"; \
@@ -123,7 +134,7 @@ package-lock.json: package.json $(AQUA_ROOT_DIR)/.installed
 			--no-fund; \
 	fi; \
 
-node_modules/.installed: package-lock.json
+node_modules/.installed:
 	@# bash \
 	loglevel="silent"; \
 	if [ -n "$(DEBUG_LOGGING)" ]; then \
@@ -514,6 +525,9 @@ zizmor: .venv/.installed ## Runs the zizmor linter.
 
 ## Maintenance
 #####################################################################
+
+.PHONY: update-lockfiles
+update-lockfiles: .aqua-checksums.json package-lock.json ## Update lockfiles.
 
 .PHONY: todos
 todos: $(AQUA_ROOT_DIR)/.installed ## Print outstanding TODOs.
