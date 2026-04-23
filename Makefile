@@ -92,7 +92,7 @@ help: ## Print all Makefile targets (this message).
 				} \
 			}'
 
-.aqua-checksum.json: .bin/aqua-$(AQUA_VERSION)/aqua
+.aqua-checksums.json: $(REPO_ROOT)/.aqua.yaml $(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION)/aqua
 	@# bash \
 	loglevel="info"; \
 	if [ -n "$(DEBUG_LOGGING)" ]; then \
@@ -132,9 +132,9 @@ package-lock.json: package.json $(AQUA_ROOT_DIR)/.installed
 			--package-lock-only \
 			--no-audit \
 			--no-fund; \
-	fi; \
+	fi
 
-node_modules/.installed:
+node_modules/.installed: package.json | package-lock.json
 	@# bash \
 	loglevel="silent"; \
 	if [ -n "$(DEBUG_LOGGING)" ]; then \
@@ -161,7 +161,7 @@ node_modules/.installed:
 	echo "$(AQUA_CHECKSUM)  $${tempfile}" | shasum -a 256 -c; \
 	tar -x -C .bin/aqua-$(AQUA_VERSION) -f "$${tempfile}"
 
-$(AQUA_ROOT_DIR)/.installed: .aqua.yaml .bin/aqua-$(AQUA_VERSION)/aqua
+$(AQUA_ROOT_DIR)/.installed: .aqua.yaml .bin/aqua-$(AQUA_VERSION)/aqua | .aqua-checksums.json
 	@# bash \
 	loglevel="info"; \
 	if [ -n "$(DEBUG_LOGGING)" ]; then \
