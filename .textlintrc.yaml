@@ -45,6 +45,7 @@ rules:
       - "/\\be2e\\b/g"
       - "/\\bmacOS\\b/g"
       - "/\\bx86-64\\b/g"
+      - "/\\b[Cc]hecksums?\\b/g"
       - "/\\b[Ff]ormatters?\\b/g"
       - "/\\b[Ll]inters?\\b/g"
       - "/\\b[Ll]ockfiles?\\b/g"
