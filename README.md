@@ -206,6 +206,13 @@ user.name`.
 
 Files are checked for the existence license headers in status checks.
 
+### Updating dependencies
+
+You can update dependencies by updating the appropriate dependency file
+(`package.json`, `.aqua.yaml`, etc.) and running `make update-lockfiles`. This
+will update the lockfiles with the appropriate versions and checksums so that
+they can be installed consistently.
+
 ## Project documentation
 
 This repository template includes stub documentation. Examples of
