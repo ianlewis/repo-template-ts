@@ -333,9 +333,8 @@ checkmake: $(AQUA_ROOT_DIR)/.installed ## Runs the checkmake linter.
 		exit 0; \
 	fi; \
 	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
-		# TODO: Remove newline from the format string after updating checkmake. \
 		checkmake \
-			--format '::error file={{.FileName}},line={{.LineNumber}}::{{.Rule}}: {{.Violation}}'$$'\n' \
+			--format '::error file={{.FileName}},line={{.LineNumber}}::{{.Rule}}: {{.Violation}}' \
 			$${files}; \
 	else \
 		checkmake $${files}; \
