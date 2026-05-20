@@ -92,7 +92,7 @@ help: ## Print all Makefile targets (this message).
 				} \
 			}'
 
-.aqua-checksums.json: $(REPO_ROOT)/.aqua.yaml $(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION)/aqua
+$(REPO_ROOT)/.aqua-checksums.json: $(REPO_ROOT)/.aqua.yaml $(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION)/aqua
 	@# bash \
 	loglevel="info"; \
 	if [ -n "$(DEBUG_LOGGING)" ]; then \
@@ -153,15 +153,15 @@ node_modules/.installed: package.json | package-lock.json
 	$(REPO_ROOT)/.venv/bin/pip install -r $< --require-hashes; \
 	touch $@
 
-.bin/aqua-$(AQUA_VERSION)/aqua:
+$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION)/aqua:
 	@# bash \
-	mkdir -p .bin/aqua-$(AQUA_VERSION); \
+	mkdir -p $(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION); \
 	tempfile=$$($(MKTEMP) --suffix=".aqua-$(AQUA_VERSION).tar.gz"); \
 	curl -sSLo "$${tempfile}" "$(AQUA_URL)"; \
 	echo "$(AQUA_CHECKSUM)  $${tempfile}" | shasum -a 256 -c; \
-	tar -x -C .bin/aqua-$(AQUA_VERSION) -f "$${tempfile}"
+	tar -x -C $(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION) -f "$${tempfile}"
 
-$(AQUA_ROOT_DIR)/.installed: .aqua.yaml .bin/aqua-$(AQUA_VERSION)/aqua | .aqua-checksums.json
+$(AQUA_ROOT_DIR)/.installed: $(REPO_ROOT)/.aqua.yaml $(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION)/aqua | $(REPO_ROOT)/.aqua-checksums.json
 	@# bash \
 	loglevel="info"; \
 	if [ -n "$(DEBUG_LOGGING)" ]; then \
@@ -507,7 +507,7 @@ zizmor: .venv/.installed ## Runs the zizmor linter.
 #####################################################################
 
 .PHONY: update-lockfiles
-update-lockfiles: .aqua-checksums.json package-lock.json ## Update lockfiles.
+update-lockfiles: $(REPO_ROOT)/.aqua-checksums.json package-lock.json ## Update lockfiles.
 
 .PHONY: todos
 todos: $(AQUA_ROOT_DIR)/.installed ## Print outstanding TODOs.
