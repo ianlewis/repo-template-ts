@@ -453,26 +453,7 @@ textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textli
 	if [ "$${files}" == "" ]; then \
 		exit 0; \
 	fi; \
-	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
-		exit_code=0; \
-		while IFS="" read -r p && [ -n "$$p" ]; do \
-			filePath=$$(echo "$$p" | jq -cr '.filePath // empty'); \
-			file=$$(realpath --relative-to="." "$${filePath}"); \
-			while IFS="" read -r m && [ -n "$$m" ]; do \
-				line=$$(echo "$$m" | jq -cr '.loc.start.line // empty'); \
-				endline=$$(echo "$$m" | jq -cr '.loc.end.line // empty'); \
-				col=$$(echo "$${m}" | jq -cr '.loc.start.column // empty'); \
-				endcol=$$(echo "$${m}" | jq -cr '.loc.end.column // empty'); \
-				message=$$(echo "$$m" | jq -cr '.message // empty'); \
-				exit_code=1; \
-				echo "::error file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
-			done <<<"$$(echo "$${p}" | jq -cr '.messages[] // empty')"; \
-		done <<<"$$($(REPO_ROOT)/node_modules/.bin/textlint --format json $${files} 2>&1 | jq -c '.[]')"; \
-		exit "$${exit_code}"; \
-	else \
-		$(REPO_ROOT)/node_modules/.bin/textlint \
-			$${files}; \
-	fi
+	$(REPO_ROOT)/node_modules/.bin/textlint $${files}
 
 .PHONY: yamllint
 yamllint: .venv/.installed ## Runs the yamllint linter.
