@@ -17,6 +17,21 @@ repository starter template.
 This repository is set up to make use of ESM modules and makes use of
 [Jest](https://jestjs.io/) for unit tests.
 
+## Features
+
+- **Self-contained**: Tools and linters are installed locally in the repository.
+  Very few [requirements](#requirements).
+- **Development dependencies are tracked**: Development dependencies are tracked
+  using dependency files and lockfiles allowing them to be easily managed and
+  upgraded; improving security and manageability.
+- **Reproducible**: Because the repository is self-contained and development
+  dependencies are tracked, linting and testing produce consistent results
+  locally as well as on GitHub Actions.
+- **Tuned for OSS**: Includes sane defaults for [project
+  documentation](#project-documentation) geared towards Open-Source projects.
+- **Tuned for GitHub**: Works well with GitHub checks and settings. Includes
+  GitHub workflows for formatting and linting of base configuration files.
+
 ## Goals
 
 ### Repository quality
@@ -59,9 +74,12 @@ for more recommended security settings.
 
 ## Requirements
 
-This repository template is meant to be used on Linux x86-64 (AMD64) systems.
-There is partial support for macOS ARM64 but `checkmake` does not provide an
-ARM64 release binary so it doesn't work on macOS.
+This repository template supports the following operating systems and
+architectures.
+
+- Linux x86-64 (AMD64).
+- Linux aarch64 (ARM64).
+- Darwin aarch64 (ARM64).
 
 In general, dependencies on outside tools should be minimized in favor of
 including them as project-local dependencies.
@@ -151,6 +169,7 @@ Formatting
   format                    Format all files
   js-format                 Format YAML files.
   json-format               Format JSON files.
+  license-headers           Update license headers.
   md-format                 Format Markdown files.
   yaml-format               Format YAML files.
   ts-format                 Format YAML files.
@@ -168,6 +187,7 @@ Linting
   yamllint                  Runs the yamllint linter.
   zizmor                    Runs the zizmor linter.
 Maintenance
+  update-lockfiles          Update lockfiles.
   todos                     Print outstanding TODOs.
   clean                     Delete temporary files.
 ```
@@ -200,6 +220,13 @@ missing it with the Copyright holder set to the current value of `git config
 user.name`.
 
 Files are checked for the existence license headers in status checks.
+
+### Updating dependencies
+
+You can update dependencies by updating the appropriate dependency file
+(`package.json`, `.aqua.yaml`, etc.) and running `make update-lockfiles`. This
+will update the lockfiles with the appropriate versions and checksums so that
+they can be installed consistently.
 
 ## Project documentation
 
@@ -364,8 +391,9 @@ git merge --no-edit --signoff --squash --allow-unrelated-histories --log repo-te
 
 ## Contributing
 
-PRs may be accepted to this template. See [`CONTRIBUTING.md`] for contributor
-documentation.
+PRs may be accepted to this template. This template uses the same
+[`CONTRIBUTING.md`] for contributor documentation as for new repositories
+created from the template.
 
 [Dependabot alerts]: https://docs.github.com/en/code-security/dependabot/dependabot-alerts/about-dependabot-alerts
 [dependency graph]: https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-the-dependency-graph
