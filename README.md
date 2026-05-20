@@ -167,12 +167,14 @@ Linting
   checkmake                 Runs the checkmake linter.
   commitlint                Run commitlint linter.
   fixme                     Check for outstanding FIXMEs.
+  format-check              Check that files are properly formatted.
   markdownlint              Runs the markdownlint linter.
   renovate-config-validator Validate Renovate configuration.
   textlint                  Runs the textlint linter.
   yamllint                  Runs the yamllint linter.
   zizmor                    Runs the zizmor linter.
 Maintenance
+  update-lockfiles          Update lockfiles.
   todos                     Print outstanding TODOs.
   clean                     Delete temporary files.
 ```
