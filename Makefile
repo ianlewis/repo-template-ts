@@ -155,7 +155,7 @@ node_modules/.installed: package.json | package-lock.json
 
 $(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION)/aqua:
 	@# bash \
-	mkdir -p .bin/aqua-$(AQUA_VERSION); \
+	mkdir -p $(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION); \
 	tempfile=$$($(MKTEMP) --suffix=".aqua-$(AQUA_VERSION).tar.gz"); \
 	curl -sSLo "$${tempfile}" "$(AQUA_URL)"; \
 	echo "$(AQUA_CHECKSUM)  $${tempfile}" | shasum -a 256 -c; \
