@@ -455,7 +455,6 @@ textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textli
 	fi; \
 	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 		exit_code=0; \
-		textlint_out="$$($(REPO_ROOT)/node_modules/.bin/textlint --format json $${files} | jq -cr '.[]' || exit_code=\"$$?\")"; \
 		while IFS="" read -r p && [ -n "$$p" ]; do \
 			filePath=$$(echo "$$p" | jq -cr '.filePath // empty'); \
 			file=$$(realpath --relative-to="." "$${filePath}"); \
