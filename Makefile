@@ -124,6 +124,10 @@ package-lock.json: package.json $(AQUA_ROOT_DIR)/.installed
 		# integrity field. npm install will not restore this field if \
 		# missing in an existing package-lock.json file. \
 		rm -f $@; \
+		# NOTE: We clean the node_modules directory to ensure that npm install \
+		#       will not desync between the package.json, package-lock.json \
+		#       and the node_modules directory. \
+		$(MAKE) clean-node-modules; \
 		npm --loglevel="$${loglevel}" install \
 			--no-audit \
 			--no-fund; \
@@ -523,10 +527,13 @@ todos: $(AQUA_ROOT_DIR)/.installed ## Print outstanding TODOs.
 		--output "$${output}" \
 		--todo-types="TODO,Todo,todo,FIXME,Fixme,fixme,BUG,Bug,bug,XXX,COMBAK"
 
+.PHONY: clean-node-modules
+clean-node-modules:
+	@$(RM) -r node_modules
+
 .PHONY: clean
-clean: ## Delete temporary files.
+clean: clean-node-modules ## Delete temporary files.
 	@$(RM) -r .bin
 	@$(RM) -r $(AQUA_ROOT_DIR)
 	@$(RM) -r .venv
-	@$(RM) -r node_modules
 	@$(RM) *.sarif.json
