@@ -254,13 +254,17 @@ repository template.
        to preserve the original commit history of a pull request. This makes it
        easier to retain the original commit messages and signatures of
        contributors. Disallowing squash merges and rebase merges is recommended.
+2. [ ] **Require contributors to sign off on web-based commits**: This is
+       recommended to ensure that all commits made through the GitHub web
+       interface are signed off by the author with a Developer Certificate of
+       Origin (DCO).
 
 #### GitHub Apps
 
 1. [ ] **Enable [DCO](https://github.com/apps/dco):** Enable the DCO GitHub App
-       to ensure that all commits are signed off by the author. This is a
-       lightweight alternative to a [Contributor License
-       Agreement](https://en.wikipedia.org/wiki/Contributor_License_Agreement)
+       to ensure that all commits are signed off by the author with a DCO. This
+       is a lightweight alternative to a
+       [Contributor License Agreement](https://en.wikipedia.org/wiki/Contributor_License_Agreement)
        (CLA) for contributors to certify that they wrote or otherwise have the
        right to submit the code they are contributing to the project. If you
        have a CLA you can omit this step.
