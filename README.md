@@ -343,11 +343,20 @@ Commits](https://www.conventionalcommits.org/en/v1.0.0/) to standardize commit
 message formatting. Conventional commits can help to communicate the nature of
 changes at a glance, and give hints on backwards compatibility.
 
-While you _may_ use conventional commits to automatically determine the next
-release version, it is **not** recommended to use conventional commits to auto
-generate user-facing documentation such as the `CHANGELOG.md` or release notes.
-These should be written for an end-user audience, be human readable, and include
-additional relevant information and context.
+While you _may_ use conventional commits to automate releases, it is **not**
+recommended to use commit messages to automatically determine the next
+release version, or to auto-generate user-facing documentation such as the
+`CHANGELOG.md` or release notes. These should be written for an end-user
+audience, be human readable, and include additional relevant information and
+context.
+
+This repository deviates slightly from the conventional commits specification by
+requiring that all commits include a scope. Scope is project specific and could
+refer to a component, module, or section of the codebase.
+
+This post explains some of the rationale:
+
+- [Stop Using Conventional Commits](https://sumnerevans.com/posts/software-engineering/stop-using-conventional-commits/) - _Sumner Evans_
 
 ## Keeping repositories in sync
 
