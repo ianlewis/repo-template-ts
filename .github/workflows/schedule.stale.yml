@@ -45,7 +45,7 @@ jobs:
           # prevents issues and PRs from being closed if they are actively being
           # worked on.
           remove-stale-when-updated: true
-          # Exempt all issuer or PRs with milestones, as they are likely being
+          # Exempt all issues or PRs with milestones, as they are likely being
           # actively planned.
           exempt-all-milestones: true
           exempt-pr-labels: "no-auto-close"
