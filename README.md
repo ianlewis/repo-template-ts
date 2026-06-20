@@ -215,6 +215,11 @@ You can update dependencies by updating the appropriate dependency file
 will update the lockfiles with the appropriate versions and checksums so that
 they can be installed consistently.
 
+[Mend Renovate](https://www.mend.io/renovate/) can be used to automatically
+update dependencies and lockfiles. The [autofix.ci](https://autofix.ci/) GitHub
+App can also be used to automatically update lockfiles on pull requests created
+by Renovate.
+
 ## Project documentation
 
 This repository template includes stub documentation. Examples of
@@ -268,6 +273,13 @@ repository template.
        (CLA) for contributors to certify that they wrote or otherwise have the
        right to submit the code they are contributing to the project. If you
        have a CLA you can omit this step.
+2. [ ] **Enable [Mend Renovate](https://www.mend.io/renovate/):** Enable
+       Renovate to automatically update dependencies and lockfiles. This is
+       recommended to ensure that dependencies are kept up to date and security
+       vulnerabilities are addressed in a timely manner.
+3. [ ] **Enable [autofix.ci](https://autofix.ci/):** Enable autofix.ci to
+       automatically update lockfiles in pull requests. This is recommended to
+       avoid having to manually update lockfiles on Renovate PRs.
 
 #### Rules / Rulesets
 
