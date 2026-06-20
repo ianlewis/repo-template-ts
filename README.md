@@ -57,8 +57,8 @@ External dependencies on GitHub actions are limited to trusted actions with
 good security practices (e.g. official GitHub-owned actions) to minimize
 exposure to compromise via external repositories.
 
-Versioning of formatting, linting, and other tool dependencies is done via the
-`requirements.txt` and `packages.json` where possible. This is so that the
+Versioning of formatting, linting, and other tool dependencies is done via
+lockfiles (e.g. `uv.lock`, `package-lock.json`). This is so that the
 versions can be maintained and updated via dependency automation tooling. This
 repository uses [Mend Renovate](https://www.mend.io/renovate/) because it
 allows more flexibility in configuration than Dependabot.

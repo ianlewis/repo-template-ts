@@ -20,6 +20,8 @@ BASH_OPTIONS := $(shell if [ "$(DEBUG_LOGGING)" == "true" ]; then echo "-x"; els
 # Add extra options for debugging.
 SHELL := /usr/bin/env bash -ueo pipefail $(BASH_OPTIONS)
 
+include versions.mk
+
 uname_s := $(shell uname -s)
 uname_m := $(shell uname -m)
 arch.x86_64 := amd64
@@ -35,11 +37,7 @@ REPO_ROOT := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 REPO_NAME := $(shell basename "$(REPO_ROOT)")
 
 # renovate: datasource=github-releases depName=aquaproj/aqua versioning=loose
-AQUA_VERSION ?= v2.58.0
 AQUA_REPO := github.com/aquaproj/aqua
-AQUA_CHECKSUM.linux.amd64 := e4db66fca1cf9061d18ff1c0abc1cb68ada30e1e2500438ec8a20b72661111be
-AQUA_CHECKSUM.linux.arm64 := 2e7fe48e181eb6e310653124562b5b30569f1a29b781da6ee82d902ded25c6dc
-AQUA_CHECKSUM.darwin.arm64 := 2d6a5dbdfac17a9caa256f87104b9ce716dcd6eb8cbe1c248adb63d24101db21
 AQUA_CHECKSUM ?= $(AQUA_CHECKSUM.$(kernel).$(arch))
 AQUA_URL := https://$(AQUA_REPO)/releases/download/$(AQUA_VERSION)/aqua_$(kernel)_$(arch).tar.gz
 export AQUA_ROOT_DIR = $(REPO_ROOT)/.aqua
@@ -92,16 +90,8 @@ help: ## Print all Makefile targets (this message).
 				} \
 			}'
 
-$(REPO_ROOT)/.aqua-checksums.json: $(REPO_ROOT)/.aqua.yaml $(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION)/aqua
-	@# bash \
-	loglevel="info"; \
-	if [ -n "$(DEBUG_LOGGING)" ]; then \
-		loglevel="debug"; \
-	fi; \
-	$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION)/aqua \
-		--config "$(REPO_ROOT)/.aqua.yaml" \
-		--log-level "$${loglevel}" \
-		update-checksum
+# Node.js setup
+#####################################################################
 
 package-lock.json: package.json $(AQUA_ROOT_DIR)/.installed
 	@# bash \
@@ -148,14 +138,43 @@ node_modules/.installed: package.json | package-lock.json
 	npm --loglevel="$${loglevel}" audit signatures; \
 	touch $@
 
-.venv/bin/activate:
-	@# bash \
-	python -m venv .venv
+# Python setup
+#####################################################################
 
-.venv/.installed: requirements-dev.txt .venv/bin/activate
+.uv/venv/bin/activate:
 	@# bash \
-	$(REPO_ROOT)/.venv/bin/pip install -r $< --require-hashes; \
+	mkdir -p $(REPO_ROOT)/.uv; \
+	python -m venv $(REPO_ROOT)/.uv/venv; \
 	touch $@
+
+.uv/.installed: requirements-dev.txt .uv/venv/bin/activate
+	@# bash \
+	$(REPO_ROOT)/.uv/venv/bin/pip install -r $< --require-hashes; \
+	touch $@
+
+uv.lock: pyproject.toml .uv/.installed
+	@# bash \
+	$(REPO_ROOT)/.uv/venv/bin/uv lock; \
+	touch $@
+
+.venv/.installed: pyproject.toml .uv/.installed | uv.lock
+	@# bash \
+	$(REPO_ROOT)/.uv/venv/bin/uv sync; \
+	touch $@
+
+# Aqua setup
+#####################################################################
+
+$(REPO_ROOT)/.aqua-checksums.json: $(REPO_ROOT)/.aqua.yaml $(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION)/aqua
+	@# bash \
+	loglevel="info"; \
+	if [ -n "$(DEBUG_LOGGING)" ]; then \
+		loglevel="debug"; \
+	fi; \
+	$(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION)/aqua \
+		--config "$(REPO_ROOT)/.aqua.yaml" \
+		--log-level "$${loglevel}" \
+		update-checksum
 
 $(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION)/aqua:
 	@# bash \
@@ -511,7 +530,7 @@ zizmor: .venv/.installed ## Runs the zizmor linter.
 #####################################################################
 
 .PHONY: update-lockfiles
-update-lockfiles: $(REPO_ROOT)/.aqua-checksums.json package-lock.json ## Update lockfiles.
+update-lockfiles: $(REPO_ROOT)/.aqua-checksums.json package-lock.json uv.lock ## Update lockfiles.
 
 .PHONY: todos
 todos: $(AQUA_ROOT_DIR)/.installed ## Print outstanding TODOs.
@@ -536,4 +555,5 @@ clean: clean-node-modules ## Delete temporary files.
 	@$(RM) -r .bin
 	@$(RM) -r $(AQUA_ROOT_DIR)
 	@$(RM) -r .venv
+	@$(RM) -r .uv
 	@$(RM) *.sarif.json
