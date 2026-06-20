@@ -160,7 +160,7 @@ uv.lock: pyproject.toml .uv/.installed
 
 .venv/.installed: pyproject.toml .uv/.installed
 	@# bash \
-	$(REPO_ROOT)/.uv/venv/bin/uv sync; \
+	$(REPO_ROOT)/.uv/venv/bin/uv sync --locked; \
 	touch $@
 
 # Aqua setup
