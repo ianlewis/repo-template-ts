@@ -26,7 +26,7 @@ starter template.
   [GitHub recommended community standards](https://opensource.guide/).
 - **Tuned for GitHub**: Works well with GitHub checks and settings. Includes
   GitHub workflows for formatting and linting of base configuration files.
-- **Ideal for AI agents**: Because the repository is self-contained it is ideal
+- **Ideal for AI agents**: Because the repository is self-contained, it is ideal
   for use with AI agents running in sandboxed environments. Tests and linters
   can be run easily by agents to check their work and get feedback on changes
   they have made.
@@ -251,8 +251,8 @@ This post explains some of the rationale:
 
 You can optionally keep repositories created with the template in sync with
 changes to the template. Because repositories created from GitHub templates are
-not forks, it is recommended to perform a squash merge to squash the merge as a
-commit on your commit history.
+not forks, it is recommended to perform a squash merge so the template sync
+lands as a single commit on your commit history.
 
 ```shell
 # One time step: Add the repository template as a remote.
