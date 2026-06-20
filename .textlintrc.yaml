@@ -41,6 +41,7 @@ rules:
       - "/\\bNode.js\\b/g"
       - "/\\bOpenSSF\\b/g"
       - "/\\bTODOs?\\b/g"
+      - "/\\bautofix\\.ci\\b/g"
       - "/\\baarch64\\b/g"
       - "/\\be2e\\b/g"
       - "/\\bmacOS\\b/g"
