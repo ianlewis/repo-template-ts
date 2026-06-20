@@ -26,7 +26,7 @@ create an issue.
 ### Review the Community Guidelines and Code of Conduct
 
 Contributors are expected to follow the [Code of Conduct]. Please take a few
-minutes to read over it. Please see the Code of Conduct about how to report
+minutes to read over it. Please see the Code of Conduct for how to report
 instances of abusive, harassing, or otherwise unacceptable behavior.
 
 ## Providing Feedback
