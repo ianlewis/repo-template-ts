@@ -177,7 +177,8 @@ $(AQUA_ROOT_DIR)/.$(AQUA_VERSION).installed:
 	$(AQUA_ROOT_DIR)/bin/aqua \
 		--config ".aqua.yaml" \
 		--log-level "$${loglevel}" \
-		update-checksum
+		update-checksum \
+		--prune
 
 $(AQUA_ROOT_DIR)/.installed: .aqua.yaml $(AQUA_ROOT_DIR)/.$(AQUA_VERSION).installed
 	@# bash \
