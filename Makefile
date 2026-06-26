@@ -41,7 +41,7 @@ AQUA_CHECKSUM ?= $(AQUA_CHECKSUM.$(kernel).$(arch))
 export AQUA_ROOT_DIR = $(REPO_ROOT)/.aqua
 
 # Ensure that aqua and aqua installed tools are in the PATH.
-export PATH := $(REPO_ROOT)/.bin/aqua-$(AQUA_VERSION):$(AQUA_ROOT_DIR)/bin:$(PATH)
+export PATH := $(AQUA_ROOT_DIR)/bin:$(PATH)
 
 # We want GNU versions of tools so prefer them if present.
 GREP := $(shell command -v ggrep 2>/dev/null || command -v grep 2>/dev/null)
@@ -163,11 +163,12 @@ uv.lock: pyproject.toml .uv/.installed
 # Aqua setup
 #####################################################################
 
-$(AQUA_ROOT_DIR)/bin/aqua:
+$(AQUA_ROOT_DIR)/.$(AQUA_VERSION).installed:
 	@# bash \
-	./third_party/aquaproj/aqua-installer/aqua-installer -v "$(AQUA_VERSION)"
+	./third_party/aquaproj/aqua-installer/aqua-installer -v "$(AQUA_VERSION)"; \
+	touch $@
 
-.aqua-checksums.json: .aqua.yaml $(AQUA_ROOT_DIR)/bin/aqua
+.aqua-checksums.json: .aqua.yaml $(AQUA_ROOT_DIR)/.$(AQUA_VERSION).installed
 	@# bash \
 	loglevel="info"; \
 	if [ -n "$(DEBUG_LOGGING)" ]; then \
@@ -178,7 +179,7 @@ $(AQUA_ROOT_DIR)/bin/aqua:
 		--log-level "$${loglevel}" \
 		update-checksum
 
-$(AQUA_ROOT_DIR)/.installed: $(AQUA_ROOT_DIR)/bin/aqua .aqua.yaml
+$(AQUA_ROOT_DIR)/.installed: .aqua.yaml $(AQUA_ROOT_DIR)/.$(AQUA_VERSION).installed
 	@# bash \
 	loglevel="info"; \
 	if [ -n "$(DEBUG_LOGGING)" ]; then \
