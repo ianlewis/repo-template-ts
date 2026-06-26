@@ -36,11 +36,8 @@ REPO_NAME := $(shell basename "$(REPO_ROOT)")
 
 # renovate: datasource=github-releases depName=aquaproj/aqua versioning=loose
 AQUA_VERSION ?= v2.58.0
-# renovate: datasource=github-releases depName=aquaproj/aqua-installer versioning=loose
-AQUA_INSTALLER_VERSION ?= v4.0.4
 AQUA_REPO := github.com/aquaproj/aqua
 AQUA_CHECKSUM ?= $(AQUA_CHECKSUM.$(kernel).$(arch))
-AQUA_INSTALLER_URL := https://raw.githubusercontent.com/aquaproj/aqua-installer/$(AQUA_INSTALLER_VERSION)/aqua-installer
 export AQUA_ROOT_DIR = $(REPO_ROOT)/.aqua
 
 # Ensure that aqua and aqua installed tools are in the PATH.
@@ -166,17 +163,9 @@ uv.lock: pyproject.toml .uv/.installed
 # Aqua setup
 #####################################################################
 
-# NOTE: aqua-installer itself is treated as a lockfile.
-.PHONY: aqua-installer
-aqua-installer:
-	curl -sSfL -o .aqua-installer $(AQUA_INSTALLER_URL); \
-	# TODO(github.com/aquaproj/aqua-installer/pull/932): Remove after merge \
-	sed -i'' -E 's/rm -R /rm -Rf /' .aqua-installer; \
-	chmod +x .aqua-installer
-
 $(AQUA_ROOT_DIR)/bin/aqua:
 	@# bash \
-	./.aqua-installer -v "$(AQUA_VERSION)"
+	./third_party/aquaproj/aqua-installer/aqua-installer -v "$(AQUA_VERSION)"
 
 .aqua-checksums.json: .aqua.yaml $(AQUA_ROOT_DIR)/bin/aqua
 	@# bash \
@@ -534,7 +523,7 @@ zizmor: .venv/.installed ## Runs the zizmor linter.
 #####################################################################
 
 .PHONY: update-lockfiles
-update-lockfiles: .aqua-checksums.json package-lock.json uv.lock aqua-installer ## Update lockfiles.
+update-lockfiles: .aqua-checksums.json package-lock.json uv.lock ## Update lockfiles.
 
 .PHONY: todos
 todos: $(AQUA_ROOT_DIR)/.installed ## Print outstanding TODOs.
