@@ -1,15 +1,21 @@
-# `repo-template`
+# `repo-template-ts`
 
 <!-- TODO: update badge urls -->
 
-[![tests](https://github.com/ianlewis/repo-template/actions/workflows/pull_request.tests.yml/badge.svg)](https://github.com/ianlewis/repo-template/actions/workflows/pull_request.tests.yml)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template/badge)](https://securityscorecards.dev/viewer/?uri=github.com%2Fianlewis%2Frepo-template)
+[![tests](https://github.com/ianlewis/repo-template-ts/actions/workflows/pull_request.tests.yml/badge.svg)](https://github.com/ianlewis/repo-template-ts/actions/workflows/pull_request.tests.yml)
+[![Codecov](https://codecov.io/gh/ianlewis/repo-template-ts/graph/badge.svg?token=STWQS28VUG)](https://codecov.io/gh/ianlewis/repo-template-ts)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ianlewis/repo-template-ts/badge)](https://securityscorecards.dev/viewer/?uri=github.com%2Fianlewis%2Frepo-template-ts)
 
 <!-- TODO: Update README contents. -->
 
+Repository template for TypeScript repositories under `github.com/ianlewis`.
+
 This repository template is maintained for use in repositories under
-`github.com/ianlewis`. However, it can be used as a general purpose repository
-starter template.
+`github.com/ianlewis`. However, it can be used as a general purpose TypeScript
+repository starter template.
+
+This repository is set up to make use of ESM modules and makes use of
+[Jest](https://jestjs.io/) for unit tests.
 
 ## Features
 
@@ -123,6 +129,7 @@ do not need to be pre-installed:
   `.aqua`).
 - [`checkmake`]: For linting `Makefile` (installed by Aqua in `.aqua`).
 - [`commitlint`]: For checking commit messages (installed by local
+- [`eslint`]: For linting JavaScript and TypeScript (installed in local
   `node_modules`).
 - [`jq`]: For parsing output of some linters (installed by Aqua in `.aqua`).
 - [`markdownlint`]: For linting Markdown (installed in local `node_modules`).
@@ -152,25 +159,31 @@ and their descriptions grouped by function.
 
 ```shell
 $ make
-repo-template Makefile
+repo-template-ts Makefile
 Usage: make [COMMAND]
 
   help                      Print all Makefile targets (this message).
 Build
   all                       Build everything.
+  build                     Build the project.
+  pack                      Create a package tarball.
 Testing
   test                      Run all tests.
+  unit-test                 Runs all unit tests.
 Formatting
   format                    Format all files
+  js-format                 Format YAML files.
   json-format               Format JSON files.
   license-headers           Update license headers.
   md-format                 Format Markdown files.
   yaml-format               Format YAML files.
+  ts-format                 Format YAML files.
 Linting
   lint                      Run all linters.
   actionlint                Runs the actionlint linter.
   checkmake                 Runs the checkmake linter.
   commitlint                Run commitlint linter.
+  eslint                    Runs eslint.
   fixme                     Check for outstanding FIXMEs.
   format-check              Check that files are properly formatted.
   markdownlint              Runs the markdownlint linter.
@@ -343,10 +356,12 @@ to achieve the highest Tier and score as possible.
     - [ ] `checkmake / checkmake`
     - [ ] `commitlint / commitlint`
     - [ ] `format-check / format-check`
+    - [ ] `eslint / eslint`
     - [ ] `markdownlint / markdownlint`
     - [ ] `renovate-config-validator / renovate-config-validator`
     - [ ] `textlint / textlint`
     - [ ] `fixme / fixme`
+    - [ ] `unit-test / unit-test`
     - [ ] `yamllint / yamllint`
     - [ ] `zizmor / zizmor`
 
@@ -398,15 +413,12 @@ following settings:
        allowlist to allow Copilot to access them in agent sessions.
     - [ ] `sigstore.dev`
 
-## Language-Specific Templates
+#### Secrets and variables / Actions
 
-A number of language specific templates based on this template are also available:
+Add the repository to [Codecov](https://codecov.io/) for code coverage. View the Codecov
+[Quick Start Guide](https://docs.codecov.com/docs/quick-start) for more information.
 
-| Language              | Repository                                                                  |
-| --------------------- | --------------------------------------------------------------------------- |
-| Go                    | [`ianlewis/repo-template-go`](https://github.com/ianlewis/repo-template-go) |
-| Python                | [`ianlewis/repo-template-py`](https://github.com/ianlewis/repo-template-py) |
-| TypeScript/JavaScript | [`ianlewis/repo-template-ts`](https://github.com/ianlewis/repo-template-ts) |
+- [ ] **`CODECOV_TOKEN`:** add the repository upload token as a repository secret.
 
 ## Contributing
 
@@ -424,6 +436,7 @@ created from the template.
 [`actionlint`]: https://github.com/rhysd/actionlint
 [`checkmake`]: https://github.com/checkmake/checkmake
 [`commitlint`]: https://commitlint.js.org/
+[`eslint`]: https://eslint.org/
 [`mbrukman/autogen`]: https://github.com/mbrukman/autogen
 [`git`]: https://git-scm.com/
 [`jq`]: https://jqlang.org/
