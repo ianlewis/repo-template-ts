@@ -18,6 +18,7 @@
     "noUnusedParameters": false,
     "pretty": true,
     "resolveJsonModule": true,
+    "skipLibCheck": true, // TODO(#109): Remove this option when possible.
     "strict": true,
     "strictNullChecks": true,
     "target": "ES2022"
