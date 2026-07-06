@@ -13,12 +13,36 @@
 # limitations under the License.
 
 # Set the initial shell so we can determine extra options.
-SHELL := /usr/bin/env bash -ueo pipefail
-DEBUG_LOGGING ?= $(shell if [[ "$(GITHUB_ACTIONS)" == "true" ]] && [[ -n "$(RUNNER_DEBUG)" || "$(ACTIONS_RUNNER_DEBUG)" == "true" || "$(ACTIONS_STEP_DEBUG)" == "true" ]]; then echo "true"; else echo ""; fi)
-BASH_OPTIONS := $(shell if [ "$(DEBUG_LOGGING)" == "true" ]; then echo "-x"; else echo ""; fi)
+SHELL := bash
+# TODO(https://github.com/checkmake/checkmake/issues/263): use := assignment
+# NOTE: We use recursive assignment to avoid triggering a bug in checkmake.
+.SHELLFLAGS = -ueo pipefail -c
 
-# Add extra options for debugging.
-SHELL := /usr/bin/env bash -ueo pipefail $(BASH_OPTIONS)
+DEBUG_LOGGING ?=
+ifeq ($(DEBUG_LOGGING),)
+  ifeq ($(GITHUB_ACTIONS),true)
+    ifneq ($(RUNNER_DEBUG),)
+      DEBUG_LOGGING := true
+    else
+      ifeq ($(ACTIONS_RUNNER_DEBUG),true)
+        DEBUG_LOGGING := true
+      else
+        ifeq ($(ACTIONS_STEP_DEBUG),true)
+          DEBUG_LOGGING := true
+        endif
+      endif
+    endif
+  endif
+endif
+
+ifeq ($(DEBUG_LOGGING),true)
+  .SHELLFLAGS := -x $(.SHELLFLAGS)
+endif
+
+# ONESHELL executes all commands in a recipe in a single shell instance. This
+# allows us to use shell variables and functions across multiple lines in a
+# recipe.
+.ONESHELL:
 
 uname_s := $(shell uname -s)
 uname_m := $(shell uname -m)
@@ -62,118 +86,117 @@ MKTEMP := $(shell command -v gmktemp 2>/dev/null || command -v mktemp 2>/dev/nul
 
 .PHONY: help
 help: ## Print all Makefile targets (this message).
-	@# bash \
-	echo "$(REPO_NAME) Makefile"; \
-	echo "Usage: $(MAKE) [COMMAND]"; \
-	echo ""; \
-	normal=""; \
-	cyan=""; \
-	if command -v tput >/dev/null 2>&1; then \
-		if [ -t 1 ]; then \
-			normal=$$(tput sgr0); \
-			cyan=$$(tput setaf 6); \
-		fi; \
-	fi; \
+	@echo "$(REPO_NAME) Makefile"
+	echo "Usage: $(MAKE) [COMMAND]"
+	echo ""
+	normal="";
+	cyan=""
+	if command -v tput >/dev/null 2>&1; then
+		if [ -t 1 ]; then
+			normal=$$(tput sgr0)
+			cyan=$$(tput setaf 6)
+		fi
+	fi
 	$(GREP) --no-filename -E '^([/a-z.A-Z0-9_%-]+:.*?|)##' $(MAKEFILE_LIST) | \
 		$(AWK) \
 			--assign=normal="$${normal}" \
 			--assign=cyan="$${cyan}" \
-			'BEGIN {FS = "(:.*?|)## ?"}; { \
-				if (length($$1) > 0) { \
-					printf("  " cyan "%-25s" normal " %s\n", $$1, $$2); \
-				} else { \
-					if (length($$2) > 0) { \
-						printf("%s\n", $$2); \
-					} \
-				} \
+			'BEGIN {FS = "(:.*?|)## ?"}; {
+				if (length($$1) > 0) {
+					printf("  " cyan "%-25s" normal " %s\n", $$1, $$2)
+				} else {
+					if (length($$2) > 0) {
+						printf("%s\n", $$2)
+					}
+				}
 			}'
 
 # Node.js setup
 #####################################################################
 
 package-lock.json: package.json $(AQUA_ROOT_DIR)/.installed
-	@# bash \
-	loglevel="notice"; \
-	if [ -n "$(DEBUG_LOGGING)" ]; then \
-		loglevel="verbose"; \
-	fi; \
-	# NOTE: npm install will happily ignore the fact that integrity hashes are \
-	# missing in the package-lock.json. We need to check for missing integrity \
-	# fields ourselves. If any are missing, then we need to regenerate the \
-	# package-lock.json from scratch. \
-	nointegrity=""; \
-	noresolved=""; \
-	if [ -f "$@" ]; then \
-		nointegrity=$$(jq '.packages | del(."") | .[] | select(has("integrity") | not)' < $@); \
-		noresolved=$$(jq '.packages | del(."") | .[] | select(has("resolved") | not)' < $@); \
-	fi; \
-	if [ ! -f "$@" ] || [ -n "$${nointegrity}" ] || [ -n "$${noresolved}" ]; then \
-		# NOTE: package-lock.json is removed to ensure that npm includes the \
-		# integrity field. npm install will not restore this field if \
-		# missing in an existing package-lock.json file. \
-		rm -f $@; \
-		# NOTE: We clean the node_modules directory to ensure that npm install \
-		#       will not desync between the package.json, package-lock.json \
+	@echo "Updating Node.js dependencies..."
+	loglevel="notice"
+	if [ -n "$(DEBUG_LOGGING)" ]; then
+		loglevel="verbose"
+	fi
+	# NOTE: npm install will happily ignore the fact that integrity hashes are
+	# missing in the package-lock.json. We need to check for missing integrity
+	# fields ourselves. If any are missing, then we need to regenerate the
+	# package-lock.json from scratch.
+	nointegrity=""
+	noresolved=""
+	if [ -f "$@" ]; then
+		nointegrity=$$(jq '.packages | del(."") | .[] | select(has("integrity") | not)' < $@)
+		noresolved=$$(jq '.packages | del(."") | .[] | select(has("resolved") | not)' < $@)
+	fi
+	if [ ! -f "$@" ] || [ -n "$${nointegrity}" ] || [ -n "$${noresolved}" ]; then
+		# NOTE: package-lock.json is removed to ensure that npm includes the
+		# integrity field. npm install will not restore this field if
+		# missing in an existing package-lock.json file.
+		rm -f $@
+		# NOTE: We clean the node_modules directory to ensure that npm install
+		#       will not desync between the package.json, package-lock.json
 		#       and the node_modules directory. \
-		$(MAKE) clean-node-modules; \
+		$(MAKE) clean-node-modules
 		npm --loglevel="$${loglevel}" install \
 			--no-audit \
-			--no-fund; \
-	else \
+			--no-fund
+	else
 		npm --loglevel="$${loglevel}" install \
 			--package-lock-only \
 			--no-audit \
-			--no-fund; \
+			--no-fund
 	fi
 
 node_modules/.installed: package.json
-	@# bash \
-	loglevel="silent"; \
-	if [ -n "$(DEBUG_LOGGING)" ]; then \
-		loglevel="verbose"; \
-	fi; \
-	npm --loglevel="$${loglevel}" clean-install; \
-	npm --loglevel="$${loglevel}" audit signatures; \
+	@echo "Installing Node.js dependencies..."
+	loglevel="silent"
+	if [ -n "$(DEBUG_LOGGING)" ]; then
+		loglevel="verbose"
+	fi
+	npm --loglevel="$${loglevel}" clean-install
+	npm --loglevel="$${loglevel}" audit signatures
 	touch $@
 
 # Python setup
 #####################################################################
 
 .uv/venv/bin/activate:
-	@# bash \
-	mkdir -p .uv; \
-	python -m venv .uv/venv; \
+	@echo "Creating Python virtual environment..."
+	mkdir -p .uv
+	python -m venv .uv/venv
 	touch $@
 
 .uv/.installed: requirements-dev.txt .uv/venv/bin/activate
-	@# bash \
-	./.uv/venv/bin/pip install -r $< --require-hashes; \
+	@echo "Installing Python dependencies..."
+	./.uv/venv/bin/pip install -r $< --require-hashes
 	touch $@
 
 uv.lock: pyproject.toml .uv/.installed
-	@# bash \
-	./.uv/venv/bin/uv lock; \
+	@echo "Updating Python dependencies..."
+	./.uv/venv/bin/uv lock
 	touch $@
 
 .venv/.installed: pyproject.toml .uv/.installed
-	@# bash \
-	./.uv/venv/bin/uv sync --locked; \
+	@echo "Installing Python dependencies..."
+	./.uv/venv/bin/uv sync --locked
 	touch $@
 
 # Aqua setup
 #####################################################################
 
 $(AQUA_ROOT_DIR)/.$(AQUA_VERSION).installed:
-	@# bash \
-	./third_party/aquaproj/aqua-installer/aqua-installer -v "$(AQUA_VERSION)"; \
+	@echo "Installing aqua $(AQUA_VERSION)..."
+	./third_party/aquaproj/aqua-installer/aqua-installer -v "$(AQUA_VERSION)"
 	touch $@
 
 .aqua-checksums.json: .aqua.yaml $(AQUA_ROOT_DIR)/.$(AQUA_VERSION).installed
-	@# bash \
-	loglevel="info"; \
-	if [ -n "$(DEBUG_LOGGING)" ]; then \
-		loglevel="debug"; \
-	fi; \
+	@echo "Updating aqua checksums..."
+	loglevel="info"
+	if [ -n "$(DEBUG_LOGGING)" ]; then
+		loglevel="debug"
+	fi
 	$(AQUA_ROOT_DIR)/bin/aqua \
 		--config ".aqua.yaml" \
 		--log-level "$${loglevel}" \
@@ -181,15 +204,15 @@ $(AQUA_ROOT_DIR)/.$(AQUA_VERSION).installed:
 		--prune
 
 $(AQUA_ROOT_DIR)/.installed: .aqua.yaml $(AQUA_ROOT_DIR)/.$(AQUA_VERSION).installed
-	@# bash \
-	loglevel="info"; \
-	if [ -n "$(DEBUG_LOGGING)" ]; then \
-		loglevel="debug"; \
-	fi; \
+	@echo "Installing aqua tools..."
+	loglevel="info"
+	if [ -n "$(DEBUG_LOGGING)" ]; then
+		loglevel="debug"
+	fi
 	$(AQUA_ROOT_DIR)/bin/aqua \
 		--config ".aqua.yaml" \
 		--log-level "$${loglevel}" \
-		install; \
+		install
 	touch $@
 
 ## Build
@@ -198,8 +221,7 @@ $(AQUA_ROOT_DIR)/.installed: .aqua.yaml $(AQUA_ROOT_DIR)/.$(AQUA_VERSION).instal
 # TODO: Add all target dependencies.
 .PHONY: all
 all: test ## Build everything.
-	@# bash \
-	echo "Nothing to build."
+	@echo "Nothing to build."
 	exit 1
 
 ## Testing
@@ -217,20 +239,20 @@ format: json-format license-headers md-format yaml-format ## Format all files
 
 .PHONY: json-format
 json-format: node_modules/.installed ## Format JSON files.
-	@# bash \
-	loglevel="log"; \
-	if [ -n "$(DEBUG_LOGGING)" ]; then \
-		loglevel="debug"; \
-	fi; \
-	files=$$( \
+	@echo "Formatting JSON files..."
+	loglevel="log"
+	if [ -n "$(DEBUG_LOGGING)" ]; then
+		loglevel="debug"
+	fi
+	files=$$(
 		git ls-files --deduplicate \
 			'*.json' \
 			'*.json5' \
-			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
-	); \
-	if [ "$${files}" == "" ]; then \
-		exit 0; \
-	fi; \
+			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done
+	)
+	if [ "$${files}" == "" ]; then
+		exit 0
+	fi
 	./node_modules/.bin/prettier \
 		--log-level "$${loglevel}" \
 		--no-error-on-unmatched-pattern \
@@ -239,8 +261,8 @@ json-format: node_modules/.installed ## Format JSON files.
 
 .PHONY: license-headers
 license-headers: ## Update license headers.
-	@# bash \
-	files=$$( \
+	@echo "Updating license headers..."
+	files=$$(
 		git ls-files --deduplicate \
 			'*.c' \
 			'*.cpp' \
@@ -255,42 +277,42 @@ license-headers: ## Update license headers.
 			'*.yaml' \
 			'*.yml' \
 			'Makefile' \
-			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
-	); \
-	name=$$(git config user.name); \
-	if [ "$${name}" == "" ]; then \
-		>&2 echo "git user.name is required."; \
-		>&2 echo "Set it up using:"; \
-		>&2 echo "git config user.name \"John Doe\""; \
-		exit 1; \
-	fi; \
-	for filename in $${files}; do \
-		if ! ( head "$${filename}" | $(GREP) -iL "Copyright" > /dev/null ); then \
+			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done
+	)
+	name=$$(git config user.name)
+	if [ "$${name}" == "" ]; then
+		>&2 echo "git user.name is required."
+		>&2 echo "Set it up using:"
+		>&2 echo "git config user.name \"John Doe\""
+		exit 1
+	fi
+	for filename in $${files}; do
+		if ! ( head "$${filename}" | $(GREP) -iL "Copyright" > /dev/null ); then
 			./third_party/mbrukman/autogen/autogen.sh \
 				--in-place \
 				--no-code \
 				--no-tlc \
 				--copyright "$${name}" \
 				--license apache \
-				"$${filename}"; \
-		fi; \
+				"$${filename}"
+		fi
 	done
 
 .PHONY: md-format
 md-format: node_modules/.installed ## Format Markdown files.
-	@# bash \
-	loglevel="log"; \
-	if [ -n "$(DEBUG_LOGGING)" ]; then \
-		loglevel="debug"; \
-	fi; \
-	files=$$( \
+	@echo "Formatting Markdown files..."
+	loglevel="log"
+	if [ -n "$(DEBUG_LOGGING)" ]; then
+		loglevel="debug"
+	fi
+	files=$$(
 		git ls-files --deduplicate \
 			'*.md' \
-			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
-	); \
-	if [ "$${files}" == "" ]; then \
-		exit 0; \
-	fi; \
+			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done
+	)
+	if [ "$${files}" == "" ]; then
+		exit 0
+	fi
 	# NOTE: prettier uses .editorconfig for tab-width. \
 	./node_modules/.bin/prettier \
 		--log-level "$${loglevel}" \
@@ -300,19 +322,19 @@ md-format: node_modules/.installed ## Format Markdown files.
 
 .PHONY: yaml-format
 yaml-format: node_modules/.installed ## Format YAML files.
-	@# bash \
-	loglevel="log"; \
-	if [ -n "$(DEBUG_LOGGING)" ]; then \
-		loglevel="debug"; \
-	fi; \
-	files=$$( \
+	@echo "Formatting YAML files..."
+	loglevel="log"
+	if [ -n "$(DEBUG_LOGGING)" ]; then
+		loglevel="debug"
+	fi
+	files=$$(
 		git ls-files --deduplicate \
 			'*.yml' \
 			'*.yaml' \
-	); \
-	if [ "$${files}" == "" ]; then \
-		exit 0; \
-	fi; \
+	)
+	if [ "$${files}" == "" ]; then
+		exit 0
+	fi
 	./node_modules/.bin/prettier \
 		--log-level "$${loglevel}" \
 		--no-error-on-unmatched-pattern \
@@ -327,72 +349,72 @@ lint: actionlint checkmake commitlint fixme format-check markdownlint renovate-c
 
 .PHONY: actionlint
 actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
-	@# bash \
-	# NOTE: We need to ignore config files used in tests. \
-	files=$$( \
+	@echo "Running actionlint..."
+	# NOTE: We need to ignore config files used in tests.
+	files=$$(
 		git ls-files --deduplicate \
 			'.github/workflows/*.yml' \
 			'.github/workflows/*.yaml' \
-			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
-	); \
-	if [ "$${files}" == "" ]; then \
-		exit 0; \
-	fi; \
-	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
+			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done
+	)
+	if [ "$${files}" == "" ]; then
+		exit 0
+	fi
+	if [ "$(OUTPUT_FORMAT)" == "github" ]; then
 		actionlint \
 			-format '{{range $$err := .}}::error file={{$$err.Filepath}},line={{$$err.Line}},col={{$$err.Column}}::{{$$err.Message}}%0A```%0A{{replace $$err.Snippet "\\n" "%0A"}}%0A```\n{{end}}' \
 			-ignore 'SC2016:' \
-			$${files}; \
-	else \
+			$${files}
+	else
 		actionlint \
 			-ignore 'SC2016:' \
-			$${files}; \
+			$${files}
 	fi
 
 .PHONY: checkmake
 checkmake: $(AQUA_ROOT_DIR)/.installed ## Runs the checkmake linter.
-	@# bash \
-	# NOTE: We need to ignore config files used in tests. \
-	files=$$( \
+	@echo "Running checkmake..."
+	# NOTE: We need to ignore config files used in tests.
+	files=$$(
 		git ls-files --deduplicate \
 			'Makefile' \
 			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
-	); \
-	if [ "$${files}" == "" ]; then \
-		exit 0; \
-	fi; \
-	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
+	)
+	if [ "$${files}" == "" ]; then
+		exit 0
+	fi
+	if [ "$(OUTPUT_FORMAT)" == "github" ]; then
 		checkmake \
 			--format '::error file={{.FileName}},line={{.LineNumber}}::{{.Rule}}: {{.Violation}}' \
-			$${files}; \
-	else \
-		checkmake $${files}; \
+			$${files}
+	else
+		checkmake $${files}
 	fi
 
 .PHONY: commitlint
 commitlint: node_modules/.installed ## Run commitlint linter.
-	@# bash \
-	commitlint_from=$(COMMITLINT_FROM_REF); \
-	commitlint_to=$(COMMITLINT_TO_REF); \
-	if [ "$${commitlint_from}" == "" ]; then \
-		# Try to get the default branch without hitting the remote server \
-		if git symbolic-ref --short refs/remotes/origin/HEAD >/dev/null 2>&1; then \
-			commitlint_from=$$(git symbolic-ref --short refs/remotes/origin/HEAD); \
-		elif git show-ref refs/remotes/origin/master >/dev/null 2>&1; then \
-			commitlint_from="origin/master"; \
-		else \
-			commitlint_from="origin/main"; \
-		fi; \
-	fi; \
-	if [ "$${commitlint_to}" == "" ]; then \
-		# If upstream of HEAD is on the commitlint_from branch, then we will \
-		# lint the last commit by default. \
-		current_branch=$$(git rev-parse --abbrev-ref @{u}); \
-		if [ "$${commitlint_from}" == "$${current_branch}" ]; then \
-			commitlint_from="HEAD~1"; \
-		fi; \
-		commitlint_to="HEAD"; \
-	fi; \
+	@echo "Running commitlint..."
+	commitlint_from=$(COMMITLINT_FROM_REF)
+	commitlint_to=$(COMMITLINT_TO_REF)
+	if [ "$${commitlint_from}" == "" ]; then
+		# Try to get the default branch without hitting the remote server
+		if git symbolic-ref --short refs/remotes/origin/HEAD >/dev/null 2>&1; then
+			commitlint_from=$$(git symbolic-ref --short refs/remotes/origin/HEAD)
+		elif git show-ref refs/remotes/origin/master >/dev/null 2>&1; then
+			commitlint_from="origin/master"
+		else
+			commitlint_from="origin/main"
+		fi
+	fi
+	if [ "$${commitlint_to}" == "" ]; then
+		# If upstream of HEAD is on the commitlint_from branch, then we will
+		# lint the last commit by default.
+		current_branch=$$(git rev-parse --abbrev-ref @{u})
+		if [ "$${commitlint_from}" == "$${current_branch}" ]; then
+			commitlint_from="HEAD~1"
+		fi
+		commitlint_to="HEAD"
+	fi
 	./node_modules/.bin/commitlint \
 		--from "$${commitlint_from}" \
 		--to "$${commitlint_to}" \
@@ -401,94 +423,94 @@ commitlint: node_modules/.installed ## Run commitlint linter.
 
 .PHONY: fixme
 fixme: $(AQUA_ROOT_DIR)/.installed ## Check for outstanding FIXMEs.
-	@# bash \
-	output="default"; \
-	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
-		output="github"; \
-	fi; \
-	# NOTE: todos does not use `git ls-files` because many files might be \
-	# 		unsupported and generate an error if passed directly on the \
-	# 		command line. \
+	@echo "Checking for outstanding FIXMEs..."
+	output="default"
+	if [ "$(OUTPUT_FORMAT)" == "github" ]; then
+		output="github"
+	fi
+	# NOTE: todos does not use `git ls-files` because many files might be
+	# 		unsupported and generate an error if passed directly on the
+	# 		command line.
 	todos \
 		--output "$${output}" \
 		--todo-types="FIXME,Fixme,fixme,BUG,Bug,bug,XXX,COMBAK"
 
 .PHONY: format-check
 format-check: ## Check that files are properly formatted.
-	@# bash \
-	if [ -n "$$(git diff)" ]; then \
-		>&2 echo "The working directory is dirty. Please commit, stage, or stash changes and try again."; \
-		exit 1; \
-	fi; \
-	$(MAKE) format; \
-	exit_code=0; \
-	if [ -n "$$(git diff)" ]; then \
-		>&2 echo "Some files need to be formatted. Please run '$(MAKE) format' and try again."; \
-		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
-			echo "::group::git diff"; \
-		fi; \
-		git --no-pager diff; \
-		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
-			echo "::endgroup::"; \
-		fi; \
-		exit_code=1; \
-	fi; \
-	git restore .; \
+	@echo "Checking that files are properly formatted..."
+	if [ -n "$$(git diff)" ]; then
+		>&2 echo "The working directory is dirty. Please commit, stage, or stash changes and try again."
+		exit 1
+	fi
+	$(MAKE) format
+	exit_code=0
+	if [ -n "$$(git diff)" ]; then
+		>&2 echo "Some files need to be formatted. Please run '$(MAKE) format' and try again."
+		if [ "$(OUTPUT_FORMAT)" == "github" ]; then
+			echo "::group::git diff"
+		fi
+		git --no-pager diff
+		if [ "$(OUTPUT_FORMAT)" == "github" ]; then
+			echo "::endgroup::"
+		fi
+		exit_code=1
+	fi
+	git restore .
 	exit "$${exit_code}"
 
 .PHONY: markdownlint
 markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the markdownlint linter.
-	@# bash \
-	# NOTE: Issue and PR templates are handled specially so we can disable \
-	# MD041/first-line-heading/first-line-h1 without adding an ugly html comment \
-	# at the top of the file. \
+	@echo "Running markdownlint..."
+	# NOTE: Issue and PR templates are handled specially so we can disable
+	# MD041/first-line-heading/first-line-h1 without adding an ugly html comment
+	# at the top of the file.
 	files=$$( \
 		git ls-files --deduplicate \
 			'*.md' \
-			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
-	); \
-	if [ "$${files}" == "" ]; then \
-		exit 0; \
-	fi; \
+			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done
+	)
+	if [ "$${files}" == "" ]; then
+		exit 0
+	fi
 	./node_modules/.bin/markdownlint-cli2 $${files}
 
 .PHONY: renovate-config-validator
 renovate-config-validator: node_modules/.installed ## Validate Renovate configuration.
-	@# bash \
+	@echo "Validating Renovate configuration..."
 	./node_modules/.bin/renovate-config-validator \
 		--strict
 
 .PHONY: textlint
 textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textlint linter.
-	@# bash \
-	files=$$( \
+	@echo "Running textlint..."
+	files=$$(
 		git ls-files --deduplicate \
 			'*.md' \
 			'*.txt' \
 			':!:requirements*.txt' \
-			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
-	); \
-	if [ "$${files}" == "" ]; then \
-		exit 0; \
-	fi; \
+			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done
+	)
+	if [ "$${files}" == "" ]; then
+		exit 0
+	fi
 	./node_modules/.bin/textlint $${files}
 
 .PHONY: yamllint
 yamllint: .venv/.installed ## Runs the yamllint linter.
-	@# bash \
-	files=$$( \
+	@echo "Running yamllint..."
+	files=$$(
 		git ls-files --deduplicate \
 			'*.yml' \
 			'*.yaml' \
-			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
-	); \
-	if [ "$${files}" == "" ]; then \
-		exit 0; \
-	fi; \
-	format="standard"; \
-	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
-		format="github"; \
-	fi; \
+			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done
+	)
+	if [ "$${files}" == "" ]; then
+		exit 0
+	fi
+	format="standard"
+	if [ "$(OUTPUT_FORMAT)" == "github" ]; then
+		format="github"
+	fi
 	./.venv/bin/yamllint \
 		--strict \
 		--format "$${format}" \
@@ -496,25 +518,25 @@ yamllint: .venv/.installed ## Runs the yamllint linter.
 
 .PHONY: zizmor
 zizmor: .venv/.installed ## Runs the zizmor linter.
-	@# bash \
-	# NOTE: On GitHub actions this outputs SARIF format to zizmor.sarif.json \
-	#       in addition to outputting errors to the terminal. \
-	files=$$( \
+	@echo "Running zizmor..."
+	# NOTE: On GitHub actions this outputs SARIF format to zizmor.sarif.json
+	#       in addition to outputting errors to the terminal.
+	files=$$(
 		git ls-files --deduplicate \
 			'.github/workflows/*.yml' \
 			'.github/workflows/*.yaml' \
-			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
-	); \
-	if [ "$${files}" == "" ]; then \
-		exit 0; \
-	fi; \
-	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
+			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done
+	)
+	if [ "$${files}" == "" ]; then
+		exit 0
+	fi
+	if [ "$(OUTPUT_FORMAT)" == "github" ]; then
 		./.venv/bin/zizmor \
 			--quiet \
 			--pedantic \
 			--format sarif \
-			$${files} > zizmor.sarif.json; \
-	fi; \
+			$${files} > zizmor.sarif.json
+	fi
 	./.venv/bin/zizmor \
 		--quiet \
 		--pedantic \
@@ -529,26 +551,28 @@ update-lockfiles: .aqua-checksums.json package-lock.json uv.lock ## Update lockf
 
 .PHONY: todos
 todos: $(AQUA_ROOT_DIR)/.installed ## Print outstanding TODOs.
-	@# bash \
-	output="default"; \
-	if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
-		output="github"; \
-	fi; \
-	# NOTE: todos does not use `git ls-files` because many files might be \
-	# 		unsupported and generate an error if passed directly on the \
-	# 		command line. \
+	@echo "Checking for outstanding TODOs..."
+	output="default"
+	if [ "$(OUTPUT_FORMAT)" == "github" ]; then
+		output="github"
+	fi
+	# NOTE: todos does not use `git ls-files` because many files might be
+	# 		unsupported and generate an error if passed directly on the command
+	# 		line.
 	todos \
 		--output "$${output}" \
 		--todo-types="TODO,Todo,todo,FIXME,Fixme,fixme,BUG,Bug,bug,XXX,COMBAK"
 
 .PHONY: clean-node-modules
 clean-node-modules:
-	@$(RM) -r node_modules
+	@echo "Cleaning up node_modules..."
+	$(RM) -r node_modules
 
 .PHONY: clean
 clean: clean-node-modules ## Delete temporary files.
-	@$(RM) -r .bin
-	@$(RM) -r $(AQUA_ROOT_DIR)
-	@$(RM) -r .venv
-	@$(RM) -r .uv
-	@$(RM) *.sarif.json
+	@echo "Cleaning up temporary files..."
+	$(RM) -r .bin
+	$(RM) -r $(AQUA_ROOT_DIR)
+	$(RM) -r .venv
+	$(RM) -r .uv
+	$(RM) *.sarif.json
