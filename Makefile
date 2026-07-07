@@ -12,51 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Set the initial shell so we can determine extra options.
-SHELL := bash
-# TODO(https://github.com/checkmake/checkmake/issues/263): use := assignment
-# NOTE: We use recursive assignment to avoid triggering a bug in checkmake.
-.SHELLFLAGS = -ueo pipefail -c
-
-DEBUG_LOGGING ?=
-ifeq ($(DEBUG_LOGGING),)
-  ifeq ($(GITHUB_ACTIONS),true)
-    ifneq ($(RUNNER_DEBUG),)
-      DEBUG_LOGGING := true
-    else
-      ifeq ($(ACTIONS_RUNNER_DEBUG),true)
-        DEBUG_LOGGING := true
-      else
-        ifeq ($(ACTIONS_STEP_DEBUG),true)
-          DEBUG_LOGGING := true
-        endif
-      endif
-    endif
-  endif
-endif
-
-ifeq ($(DEBUG_LOGGING),true)
-  .SHELLFLAGS := -x $(.SHELLFLAGS)
-endif
-
-# ONESHELL executes all commands in a recipe in a single shell instance. This
-# allows us to use shell variables and functions across multiple lines in a
-# recipe.
-.ONESHELL:
-
-uname_s := $(shell uname -s)
-uname_m := $(shell uname -m)
-arch.x86_64 := amd64
-arch.aarch64 := arm64
-arch.arm64 := arm64
-arch := $(arch.$(uname_m))
-kernel.Linux := linux
-kernel.Darwin := darwin
-kernel := $(kernel.$(uname_s))
-
-OUTPUT_FORMAT ?= $(shell if [ "$(GITHUB_ACTIONS)" == "true" ]; then echo "github"; else echo ""; fi)
-REPO_ROOT := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-REPO_NAME := $(shell basename "$(REPO_ROOT)")
+include include.mk
 
 # renovate: datasource=github-releases depName=aquaproj/aqua versioning=loose
 AQUA_VERSION ?= v2.60.1
@@ -67,49 +23,6 @@ export AQUA_ROOT_DIR = $(REPO_ROOT)/.aqua
 # Ensure that aqua and aqua installed tools are in the PATH.
 export PATH := $(AQUA_ROOT_DIR)/bin:$(PATH)
 
-# We want GNU versions of tools so prefer them if present.
-GREP := $(shell command -v ggrep 2>/dev/null || command -v grep 2>/dev/null)
-AWK := $(shell command -v gawk 2>/dev/null || command -v awk 2>/dev/null)
-MKTEMP := $(shell command -v gmktemp 2>/dev/null || command -v mktemp 2>/dev/null)
-
-# The help command prints targets in groups. Help documentation in the Makefile
-# uses comments with double hash marks (##). Documentation is printed by the
-# help target in the order in appears in the Makefile.
-#
-# Make targets can be documented with double hash marks as follows:
-#
-#	target-name: ## target documentation.
-#
-# Groups can be added with the following style:
-#
-#	## Group name
-
-.PHONY: help
-help: ## Print all Makefile targets (this message).
-	@echo "$(REPO_NAME) Makefile"
-	echo "Usage: $(MAKE) [COMMAND]"
-	echo ""
-	normal="";
-	cyan=""
-	if command -v tput >/dev/null 2>&1; then
-		if [ -t 1 ]; then
-			normal=$$(tput sgr0)
-			cyan=$$(tput setaf 6)
-		fi
-	fi
-	$(GREP) --no-filename -E '^([/a-z.A-Z0-9_%-]+:.*?|)##' $(MAKEFILE_LIST) | \
-		$(AWK) \
-			--assign=normal="$${normal}" \
-			--assign=cyan="$${cyan}" \
-			'BEGIN {FS = "(:.*?|)## ?"}; {
-				if (length($$1) > 0) {
-					printf("  " cyan "%-25s" normal " %s\n", $$1, $$2)
-				} else {
-					if (length($$2) > 0) {
-						printf("%s\n", $$2)
-					}
-				}
-			}'
 
 # Node.js setup
 #####################################################################
@@ -350,7 +263,6 @@ lint: actionlint checkmake commitlint fixme format-check markdownlint renovate-c
 .PHONY: actionlint
 actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
 	@echo "Running actionlint..."
-	# NOTE: We need to ignore config files used in tests.
 	files=$$(
 		git ls-files --deduplicate \
 			'.github/workflows/*.yml' \
@@ -374,10 +286,10 @@ actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
 .PHONY: checkmake
 checkmake: $(AQUA_ROOT_DIR)/.installed ## Runs the checkmake linter.
 	@echo "Running checkmake..."
-	# NOTE: We need to ignore config files used in tests.
 	files=$$(
 		git ls-files --deduplicate \
 			'Makefile' \
+			'GNUmakefile' \
 			| while IFS='' read -r f; do [ -f "$${f}" ] && echo "$${f}" || true; done \
 	)
 	if [ "$${files}" == "" ]; then
