@@ -49,7 +49,7 @@ ifeq ($(DEBUG_LOGGING),true)
   .SHELLFLAGS := -x $(.SHELLFLAGS)
 endif
 
-# eONESHELL executes all commands in a recipe in a single shell instance. This
+# .ONESHELL executes all commands in a recipe in a single shell instance. This
 # allows us to use shell variables and functions across multiple lines in a
 # recipe.
 .ONESHELL:
@@ -80,7 +80,7 @@ MKTEMP := $(shell command -v gmktemp 2>/dev/null || command -v mktemp 2>/dev/nul
 
 # The help command prints targets in groups. Help documentation in the Makefile
 # uses comments with double hash marks (##). Documentation is printed by the
-# help target in the order in appears in the Makefile.
+# help target in the order it appears in the Makefile.
 #
 # Make targets can be documented with double hash marks as follows:
 #
