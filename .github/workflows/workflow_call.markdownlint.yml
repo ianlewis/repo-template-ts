@@ -38,6 +38,9 @@ jobs:
         with:
           node-version-file: ".node-version"
 
+      - name: enable markdownlint-cli2 problem matcher
+        run: echo "::add-matcher::.github/problem_matchers/markdownlint-cli2.json"
+
       - name: markdownlint
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
