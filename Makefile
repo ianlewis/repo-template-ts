@@ -23,7 +23,6 @@ export AQUA_ROOT_DIR = $(MAKEFILE_ROOT)/.aqua
 # Ensure that aqua and aqua installed tools are in the PATH.
 export PATH := $(AQUA_ROOT_DIR)/bin:$(PATH)
 
-
 # Node.js setup
 #####################################################################
 
