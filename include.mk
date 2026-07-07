@@ -28,7 +28,26 @@ SHELL := bash
 # NOTE: We use recursive assignment to avoid triggering a bug in checkmake.
 .SHELLFLAGS = -ueo pipefail -c
 
+# DEBUG_LOGGING is set to true when debug logging is enabled. It will be
+# automatically set to true when running in GitHub Actions with debug logging
+# enabled. It can also be set manually to enable debug logging when running
+# locally.
 DEBUG_LOGGING ?=
+
+# The GITHUB_ACTIONS environment variable is set to 'true' when running in
+# GitHub Actions.
+# https://docs.github.com/en/actions/reference/workflows-and-actions/variables
+GITHUB_ACTIONS ?=
+
+# The RUNNER_DEBUG evironment variable is set to '1' when debug mode is enabled.
+# https://docs.github.com/en/actions/reference/workflows-and-actions/variables
+RUNNER_DEBUG ?=
+
+# GitHub Actions debug logging environment variables.
+# https://docs.github.com/en/actions/how-tos/monitor-workflows/enable-debug-logging
+ACTIONS_RUNNER_DEBUG ?=
+ACTIONS_STEP_DEBUG ?=
+
 ifeq ($(DEBUG_LOGGING),)
   ifeq ($(GITHUB_ACTIONS),true)
     ifneq ($(RUNNER_DEBUG),)
