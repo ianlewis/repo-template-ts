@@ -272,16 +272,9 @@ actionlint: $(AQUA_ROOT_DIR)/.installed ## Runs the actionlint linter.
 	if [ "$${files}" == "" ]; then
 		exit 0
 	fi
-	if [ "$(OUTPUT_FORMAT)" == "github" ]; then
-		actionlint \
-			-format '{{range $$err := .}}::error file={{$$err.Filepath}},line={{$$err.Line}},col={{$$err.Column}}::{{$$err.Message}}%0A```%0A{{replace $$err.Snippet "\\n" "%0A"}}%0A```\n{{end}}' \
-			-ignore 'SC2016:' \
-			$${files}
-	else
-		actionlint \
-			-ignore 'SC2016:' \
-			$${files}
-	fi
+	actionlint \
+		-ignore 'SC2016:' \
+		$${files}
 
 .PHONY: checkmake
 checkmake: $(AQUA_ROOT_DIR)/.installed ## Runs the checkmake linter.
@@ -442,17 +435,19 @@ zizmor: .venv/.installed ## Runs the zizmor linter.
 	if [ "$${files}" == "" ]; then
 		exit 0
 	fi
+	format="plain"
 	if [ "$(OUTPUT_FORMAT)" == "github" ]; then
 		./.venv/bin/zizmor \
 			--quiet \
 			--pedantic \
 			--format sarif \
 			$${files} > zizmor.sarif.json
+		format="github"
 	fi
 	./.venv/bin/zizmor \
 		--quiet \
 		--pedantic \
-		--format plain \
+		--format "$${format}" \
 		$${files}
 
 ## Maintenance

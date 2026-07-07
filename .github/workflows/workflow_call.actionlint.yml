@@ -34,6 +34,9 @@ jobs:
           submodules: true
           persist-credentials: false
 
+      - name: enable actionlint problem matcher
+        run: echo "::add-matcher::.github/problem_matchers/actionlint.json"
+
       - name: actionlint
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
