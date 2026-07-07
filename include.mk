@@ -70,8 +70,8 @@ kernel.Darwin := darwin
 kernel := $(kernel.$(uname_s))
 
 OUTPUT_FORMAT ?= $(shell if [ "$(GITHUB_ACTIONS)" == "true" ]; then echo "github"; else echo ""; fi)
-REPO_ROOT := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-REPO_NAME := $(shell basename "$(REPO_ROOT)")
+MAKEFILE_ROOT := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+ROOT_NAME := $(shell basename "$(MAKEFILE_ROOT)")
 
 # We want GNU versions of tools so prefer them if present.
 GREP := $(shell command -v ggrep 2>/dev/null || command -v grep 2>/dev/null)
@@ -92,7 +92,7 @@ MKTEMP := $(shell command -v gmktemp 2>/dev/null || command -v mktemp 2>/dev/nul
 
 .PHONY: help
 help: ## Print all Makefile targets (this message).
-	@echo "$(REPO_NAME) Makefile"
+	@echo "$(ROOT_NAME) Makefile"
 	echo "Usage: $(MAKE) [COMMAND]"
 	echo ""
 	normal="";

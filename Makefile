@@ -18,7 +18,7 @@ include include.mk
 AQUA_VERSION ?= v2.60.1
 AQUA_REPO := github.com/aquaproj/aqua
 AQUA_CHECKSUM ?= $(AQUA_CHECKSUM.$(kernel).$(arch))
-export AQUA_ROOT_DIR = $(REPO_ROOT)/.aqua
+export AQUA_ROOT_DIR = $(MAKEFILE_ROOT)/.aqua
 
 # Ensure that aqua and aqua installed tools are in the PATH.
 export PATH := $(AQUA_ROOT_DIR)/bin:$(PATH)
