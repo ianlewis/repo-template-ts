@@ -301,23 +301,6 @@ repository template.
        interface are signed off by the author with a Developer Certificate of
        Origin (DCO).
 
-#### GitHub Apps
-
-1. [ ] **Enable [DCO](https://github.com/apps/dco):** Enable the DCO GitHub App
-       to ensure that all commits are signed off by the author with a DCO. This
-       is a lightweight alternative to a
-       [Contributor License Agreement](https://en.wikipedia.org/wiki/Contributor_License_Agreement)
-       (CLA) for contributors to certify that they wrote or otherwise have the
-       right to submit the code they are contributing to the project. If you
-       have a CLA you can omit this step.
-2. [ ] **Enable [Mend Renovate](https://www.mend.io/renovate/):** Enable
-       Renovate to automatically update dependencies and lockfiles. This is
-       recommended to ensure that dependencies are kept up to date and security
-       vulnerabilities are addressed in a timely manner.
-3. [ ] **Enable [autofix.ci](https://autofix.ci/):** Enable autofix.ci to
-       automatically update lockfiles in pull requests. This is recommended to
-       avoid having to manually update lockfiles on Renovate PRs.
-
 #### Rules / Rulesets
 
 A `ruleset` should be created for the default branch with branch protection
@@ -362,6 +345,21 @@ The following tools should be added to the required code scanning results.
 - [ ] `CodeQL`
 - [ ] `zizmor`
 
+#### Actions / General
+
+- [ ] **Require actions to be pinned to a full-length commit SHA**: Enforce
+      pinning the version of GitHub Actions to help mitigate the risk of a bad
+      actor adding malware to the action's repository.
+
+#### Copilot / Cloud Agent
+
+If you use GitHub Copilot in your repository, it is recommended to enable the
+following settings:
+
+1. [ ] **Custom Allowlist**: Add the following domains to the Copilot custom
+       allowlist to allow Copilot to access them in agent sessions.
+    - [ ] `sigstore.dev`
+
 #### Advanced Security
 
 1. [ ] **Private vulnerability reporting:**
@@ -389,14 +387,22 @@ The following tools should be added to the required code scanning results.
 4. [ ] **Push protection:**
        Block pushing commits with secrets in them.
 
-#### Copilot / Cloud Agent
+#### GitHub Apps
 
-If you use GitHub Copilot in your repository, it is recommended to enable the
-following settings:
-
-1. [ ] **Custom Allowlist**: Add the following domains to the Copilot custom
-       allowlist to allow Copilot to access them in agent sessions.
-    - [ ] `sigstore.dev`
+1. [ ] **Enable [DCO](https://github.com/apps/dco):** Enable the DCO GitHub App
+       to ensure that all commits are signed off by the author with a DCO. This
+       is a lightweight alternative to a
+       [Contributor License Agreement](https://en.wikipedia.org/wiki/Contributor_License_Agreement)
+       (CLA) for contributors to certify that they wrote or otherwise have the
+       right to submit the code they are contributing to the project. If you
+       have a CLA you can omit this step.
+2. [ ] **Enable [Mend Renovate](https://www.mend.io/renovate/):** Enable
+       Renovate to automatically update dependencies and lockfiles. This is
+       recommended to ensure that dependencies are kept up to date and security
+       vulnerabilities are addressed in a timely manner.
+3. [ ] **Enable [autofix.ci](https://autofix.ci/):** Enable autofix.ci to
+       automatically update lockfiles in pull requests. This is recommended to
+       avoid having to manually update lockfiles on Renovate PRs.
 
 ## Language-Specific Templates
 
