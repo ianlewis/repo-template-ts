@@ -14,117 +14,6 @@
 
 include include.mk
 
-# renovate: datasource=github-releases depName=aquaproj/aqua versioning=loose
-AQUA_VERSION ?= v2.60.1
-export AQUA_ROOT_DIR = $(MAKEFILE_ROOT)/.aqua
-
-# Ensure that aqua and aqua installed tools are in the PATH.
-export PATH := $(AQUA_ROOT_DIR)/bin:$(PATH)
-
-# Node.js setup
-#####################################################################
-
-package-lock.json: package.json $(AQUA_ROOT_DIR)/.installed
-	@echo "Updating Node.js dependencies..."
-	loglevel="notice"
-	if [ -n "$(DEBUG_LOGGING)" ]; then
-		loglevel="verbose"
-	fi
-	# NOTE: npm install will happily ignore the fact that integrity hashes are
-	# missing in the package-lock.json. We need to check for missing integrity
-	# fields ourselves. If any are missing, then we need to regenerate the
-	# package-lock.json from scratch.
-	nointegrity=""
-	noresolved=""
-	if [ -f "$@" ]; then
-		nointegrity=$$(jq '.packages | del(."") | .[] | select(has("integrity") | not)' < $@)
-		noresolved=$$(jq '.packages | del(."") | .[] | select(has("resolved") | not)' < $@)
-	fi
-	if [ ! -f "$@" ] || [ -n "$${nointegrity}" ] || [ -n "$${noresolved}" ]; then
-		# NOTE: package-lock.json is removed to ensure that npm includes the
-		# integrity field. npm install will not restore this field if
-		# missing in an existing package-lock.json file.
-		rm -f $@
-		# NOTE: We clean the node_modules directory to ensure that npm install
-		#       will not desync between the package.json, package-lock.json
-		#       and the node_modules directory. \
-		$(MAKE) clean-node-modules
-		npm --loglevel="$${loglevel}" install \
-			--no-audit \
-			--no-fund
-	else
-		npm --loglevel="$${loglevel}" install \
-			--package-lock-only \
-			--no-audit \
-			--no-fund
-	fi
-
-node_modules/.installed: package.json
-	@echo "Installing Node.js dependencies..."
-	loglevel="silent"
-	if [ -n "$(DEBUG_LOGGING)" ]; then
-		loglevel="verbose"
-	fi
-	npm --loglevel="$${loglevel}" clean-install
-	npm --loglevel="$${loglevel}" audit signatures
-	touch $@
-
-# Python setup
-#####################################################################
-
-.uv/venv/bin/activate:
-	@echo "Creating Python virtual environment..."
-	mkdir -p .uv
-	python -m venv .uv/venv
-	touch $@
-
-.uv/.installed: requirements-dev.txt .uv/venv/bin/activate
-	@echo "Installing Python dependencies..."
-	./.uv/venv/bin/pip install -r $< --require-hashes
-	touch $@
-
-uv.lock: pyproject.toml .uv/.installed
-	@echo "Updating Python dependencies..."
-	./.uv/venv/bin/uv lock
-	touch $@
-
-.venv/.installed: pyproject.toml .uv/.installed
-	@echo "Installing Python dependencies..."
-	./.uv/venv/bin/uv sync --locked
-	touch $@
-
-# Aqua setup
-#####################################################################
-
-$(AQUA_ROOT_DIR)/.$(AQUA_VERSION).installed:
-	@echo "Installing aqua $(AQUA_VERSION)..."
-	./third_party/aquaproj/aqua-installer/aqua-installer -v "$(AQUA_VERSION)"
-	touch $@
-
-.aqua-checksums.json: .aqua.yaml $(AQUA_ROOT_DIR)/.$(AQUA_VERSION).installed
-	@echo "Updating aqua checksums..."
-	loglevel="info"
-	if [ -n "$(DEBUG_LOGGING)" ]; then
-		loglevel="debug"
-	fi
-	$(AQUA_ROOT_DIR)/bin/aqua \
-		--config ".aqua.yaml" \
-		--log-level "$${loglevel}" \
-		update-checksum \
-		--prune
-
-$(AQUA_ROOT_DIR)/.installed: .aqua.yaml $(AQUA_ROOT_DIR)/.$(AQUA_VERSION).installed
-	@echo "Installing aqua tools..."
-	loglevel="info"
-	if [ -n "$(DEBUG_LOGGING)" ]; then
-		loglevel="debug"
-	fi
-	$(AQUA_ROOT_DIR)/bin/aqua \
-		--config ".aqua.yaml" \
-		--log-level "$${loglevel}" \
-		install
-	touch $@
-
 ## Build
 #####################################################################
 
@@ -148,7 +37,7 @@ test: lint ## Run all tests.
 format: json-format license-headers md-format yaml-format ## Format all files
 
 .PHONY: json-format
-json-format: node_modules/.installed ## Format JSON files.
+json-format: $(REPO_ROOT)/node_modules/.installed ## Format JSON files.
 	@echo "Formatting JSON files..."
 	loglevel="log"
 	if [ -n "$(DEBUG_LOGGING)" ]; then
@@ -209,7 +98,7 @@ license-headers: ## Update license headers.
 	done
 
 .PHONY: md-format
-md-format: node_modules/.installed ## Format Markdown files.
+md-format: $(REPO_ROOT)/node_modules/.installed ## Format Markdown files.
 	@echo "Formatting Markdown files..."
 	loglevel="log"
 	if [ -n "$(DEBUG_LOGGING)" ]; then
@@ -231,7 +120,7 @@ md-format: node_modules/.installed ## Format Markdown files.
 		$${files}
 
 .PHONY: yaml-format
-yaml-format: node_modules/.installed ## Format YAML files.
+yaml-format: $(REPO_ROOT)/node_modules/.installed ## Format YAML files.
 	@echo "Formatting YAML files..."
 	loglevel="log"
 	if [ -n "$(DEBUG_LOGGING)" ]; then
@@ -294,7 +183,7 @@ checkmake: $(AQUA_ROOT_DIR)/.installed ## Runs the checkmake linter.
 	fi
 
 .PHONY: commitlint
-commitlint: node_modules/.installed ## Run commitlint linter.
+commitlint: $(REPO_ROOT)/node_modules/.installed ## Run commitlint linter.
 	@echo "Running commitlint..."
 	commitlint_from=$(COMMITLINT_FROM_REF)
 	commitlint_to=$(COMMITLINT_TO_REF)
@@ -361,7 +250,7 @@ format-check: ## Check that files are properly formatted.
 	exit "$${exit_code}"
 
 .PHONY: markdownlint
-markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the markdownlint linter.
+markdownlint: $(REPO_ROOT)/node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the markdownlint linter.
 	@echo "Running markdownlint..."
 	# NOTE: Issue and PR templates are handled specially so we can disable
 	# MD041/first-line-heading/first-line-h1 without adding an ugly html comment
@@ -377,13 +266,13 @@ markdownlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the ma
 	./node_modules/.bin/markdownlint-cli2 $${files}
 
 .PHONY: renovate-config-validator
-renovate-config-validator: node_modules/.installed ## Validate Renovate configuration.
+renovate-config-validator: $(REPO_ROOT)/node_modules/.installed ## Validate Renovate configuration.
 	@echo "Validating Renovate configuration..."
 	./node_modules/.bin/renovate-config-validator \
 		--strict
 
 .PHONY: textlint
-textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textlint linter.
+textlint: $(REPO_ROOT)/node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textlint linter.
 	@echo "Running textlint..."
 	files=$$(
 		git ls-files --deduplicate \
@@ -398,7 +287,7 @@ textlint: node_modules/.installed $(AQUA_ROOT_DIR)/.installed ## Runs the textli
 	./node_modules/.bin/textlint $${files}
 
 .PHONY: yamllint
-yamllint: .venv/.installed ## Runs the yamllint linter.
+yamllint: $(REPO_ROOT)/.venv/.installed ## Runs the yamllint linter.
 	@echo "Running yamllint..."
 	files=$$(
 		git ls-files --deduplicate \
@@ -419,7 +308,7 @@ yamllint: .venv/.installed ## Runs the yamllint linter.
 		$${files}
 
 .PHONY: zizmor
-zizmor: .venv/.installed ## Runs the zizmor linter.
+zizmor: $(REPO_ROOT)/.venv/.installed ## Runs the zizmor linter.
 	@echo "Running zizmor..."
 	# NOTE: On GitHub actions this outputs SARIF format to zizmor.sarif.json
 	#       in addition to outputting errors to the terminal.
@@ -451,7 +340,7 @@ zizmor: .venv/.installed ## Runs the zizmor linter.
 #####################################################################
 
 .PHONY: update-lockfiles
-update-lockfiles: .aqua-checksums.json package-lock.json uv.lock ## Update lockfiles.
+update-lockfiles: $(REPO_ROOT)/.aqua-checksums.json $(REPO_ROOT)/package-lock.json $(REPO_ROOT)/uv.lock ## Update lockfiles.
 
 .PHONY: todos
 todos: $(AQUA_ROOT_DIR)/.installed ## Print outstanding TODOs.
