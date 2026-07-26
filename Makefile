@@ -182,6 +182,9 @@ checkmake: $(AQUA_ROOT_DIR)/.installed ## Runs the checkmake linter.
 		checkmake $${files}
 	fi
 
+COMMITLINT_FROM_REF ?=
+COMMITLINT_TO_REF ?=
+
 .PHONY: commitlint
 commitlint: $(REPO_ROOT)/node_modules/.installed ## Run commitlint linter.
 	@echo "Running commitlint..."
