@@ -15,11 +15,11 @@
 name: tests
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [main]
+  workflow_run:
+    workflows:
+      - autofix.ci
+    types:
+      - completed
   workflow_call:
   workflow_dispatch:
 
@@ -38,35 +38,45 @@ jobs:
   # format-check
   ###############################
   format-check:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     uses: ./.github/workflows/workflow_call.format-check.yml
 
   # linters
   ###############################
   actionlint:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     uses: ./.github/workflows/workflow_call.actionlint.yml
 
   checkmake:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     uses: ./.github/workflows/workflow_call.checkmake.yml
 
   commitlint:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     uses: ./.github/workflows/workflow_call.commitlint.yml
 
   fixme:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     uses: ./.github/workflows/workflow_call.fixme.yml
 
   markdownlint:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     uses: ./.github/workflows/workflow_call.markdownlint.yml
 
   renovate-config-validator:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     uses: ./.github/workflows/workflow_call.renovate-config-validator.yml
 
   textlint:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     uses: ./.github/workflows/workflow_call.textlint.yml
 
   yamllint:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     uses: ./.github/workflows/workflow_call.yamllint.yml
 
   zizmor:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: read # Needed for private repositories.
       security-events: write # Needed to upload SARIF results.
