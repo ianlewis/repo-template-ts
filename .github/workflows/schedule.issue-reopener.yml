@@ -45,6 +45,7 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
+          submodules: recursive
 
       - name: Issue Reopener
         uses: ianlewis/todo-issue-reopener@a8fcb67fd9928a9444ee466fdd816b4e3f0b67d9 # v1.8.0
