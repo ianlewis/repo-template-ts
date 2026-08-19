@@ -80,6 +80,7 @@ jobs:
           [[ "${FORMATTING_AUTOFIXED}" != "true" ]]
 
   tests:
+    name: "tests"
     needs: autofix
     permissions:
       contents: read # Needed to check out private repositories.
