@@ -186,7 +186,7 @@ $(REPO_ROOT)/package-lock.json: $(REPO_ROOT)/package.json $(AQUA_ROOT_DIR)/.inst
 
 $(REPO_ROOT)/node_modules/.installed: $(REPO_ROOT)/package.json
 	@echo "Installing Node.js dependencies..."
-	loglevel="silent"
+	loglevel="notice"
 	if [ -n "$(DEBUG_LOGGING)" ]; then
 		loglevel="verbose"
 	fi
