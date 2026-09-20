@@ -30,6 +30,13 @@ concurrency:
 #       just a human-readable label.
 
 jobs:
+  # tests
+  ###############################
+  unit-test:
+    uses: ./.github/workflows/workflow_call.unit-test.yml
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
   # format-check
   ###############################
   format-check:
@@ -45,6 +52,9 @@ jobs:
 
   commitlint:
     uses: ./.github/workflows/workflow_call.commitlint.yml
+
+  eslint:
+    uses: ./.github/workflows/workflow_call.eslint.yml
 
   fixme:
     uses: ./.github/workflows/workflow_call.fixme.yml
