@@ -112,21 +112,40 @@
       matchManagers: ["pep621"],
       matchUpdateTypes: ["minor", "patch"],
       matchDepTypes: [
-        "requires-python",
+        "build-system.requires",
         "project.dependencies",
         "project.optional-dependencies",
-        "dependency-groups",
+        "requires-python",
       ],
+    },
+    // NOTE: dependency-groups (PEP 725) in pep621 are sometimes used to specify
+    //       development dependencies. However, they sometimes also include
+    //       non-development dependencies. Development dependencies are usually
+    //       specified in a dependency-group named 'dev' so we check for that
+    //       name.
+    // See: https://docs.renovatebot.com/modules/manager/pep621/
+    {
+      groupName: "python",
+      matchManagers: ["pep621"],
+      matchUpdateTypes: ["minor", "patch"],
+      matchDepTypes: ["dependency-groups"],
+      matchJsonata: ["managerData.depGroup != 'dev'"],
     },
     {
       groupName: "python dev",
       matchManagers: ["pep621"],
       matchUpdateTypes: ["minor", "patch"],
-      matchDepTypes: [
-        "build-system.requires",
-        "tool.pdm.dev-dependencies",
-        "tool.uv.dev-dependencies",
-      ],
+      matchDepTypes: ["tool.pdm.dev-dependencies", "tool.uv.dev-dependencies"],
+
+      automerge: true,
+      platformAutomerge: true,
+    },
+    {
+      groupName: "python dev",
+      matchManagers: ["pep621"],
+      matchUpdateTypes: ["minor", "patch"],
+      matchDepTypes: ["dependency-groups"],
+      matchJsonata: ["managerData.depGroup = 'dev'"],
 
       automerge: true,
       platformAutomerge: true,
